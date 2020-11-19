@@ -1,0 +1,50 @@
+# Apply sysctl configuration required by Elasticsearch
+#
+# This DaemonSet will re-run sysctl every 60s on all nodes.
+#
+# FIXME: See CronJob daemonset which will allow scheduling one-shot or repeated
+# jobs across nodes:
+# https://github.com/kubernetes/kubernetes/issues/36601
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+    name: "dingo-node-daemon"
+    namespace: "kube-system"
+    labels:
+      app: "dingo-node-daemon"
+spec:
+    selector:
+        matchLabels:
+            name: "dingo-node-daemon"
+    template:
+        metadata:
+            labels:
+                name: "dingo-node-daemon"
+        spec:
+            hostPID: true
+            restartPolicy: Always
+            containers:
+            - name: dingo-node-daemon
+              image: gcr.io/google-containers/startup-script:v1
+              imagePullPolicy: Always
+              securityContext:
+                  privileged: true
+              resources:
+                  requests:
+                      cpu: "100m"
+                      memory: "64Mi"
+                  limits:
+                      cpu: "100m"
+                      memory: "96Mi"
+              env:
+              - name: STARTUP_SCRIPT
+                value: |
+                    #!/bin/bash
+                    while true
+                    do
+                        echo -n "before: "; sudo sysctl -n vm.max_map_count
+                        sudo sysctl -w vm.max_map_count=262144
+                        echo -n "after: "; sudo sysctl -n vm.max_map_count
+                        sleep 60s
+                    done

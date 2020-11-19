@@ -1,0 +1,777 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+    name: dingo
+spec:
+    version: 7.9.3
+    #http:
+        #service:
+            #spec:
+                #type: LoadBalancer
+    secureSettings:
+    - secretName: gcs-credentials
+    nodeSets:
+    - name: zone-a-master
+      count: 2
+      config:
+          node.master: true
+          node.data: false
+          node.ingest: false
+          node.ml: false
+          xpack.ml.enabled: true
+          node.store.allow_mmap: false
+          index.store.type: niofs
+          cluster.routing.allocation.awareness.attributes: zone
+          node.attr.zone: asia-east1-a
+          cluster.remote.connect: false
+          xpack.security.authc.anonymous.roles: monitoring_user
+      volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data
+        spec:
+            accessModes:
+            - ReadWriteOnce
+            resources:
+                requests:
+                    storage: 80Gi
+            storageClassName: dingo-pdssd-ha
+      podTemplate:
+          metadata:
+              labels:
+                  master: "on"
+          spec:
+              containers:
+              - name: elasticsearch
+                resources:
+                    requests:
+                        memory: 5Gi
+                        cpu: 1000m
+                    limits:
+                        memory: 5Gi
+                        cpu: 1000m
+                env:
+                - name: ES_JAVA_OPTS
+                  value: "-Xms4g -Xmx4g"
+                - name: PRE_STOP_MAX_WAIT_SECONDS
+                  value: "20"
+                - name: PRE_STOP_ADDITIONAL_WAIT_SECONDS
+                  value: "30"
+                - name: READINESS_PROBE_TIMEOUT
+                  value: "10"
+                readinessProbe:
+                    exec:
+                        command:
+                        - bash
+                        - -c
+                        - /mnt/elastic-internal/scripts/readiness-probe-script.sh
+                    failureThreshold: 3
+                    initialDelaySeconds: 10
+                    periodSeconds: 12
+                    successThreshold: 1
+                    timeoutSeconds: 12
+              initContainers:
+              #- name: sysctl
+                 #securityContext:
+                     #priviledged: true
+                #command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+              - name: install-plugins
+                command:
+                - sh
+                - -c
+                - |
+                  bin/elasticsearch-plugin install --batch repository-gcs
+              affinity:
+                  nodeAffinity:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                          nodeSelectorTerms:
+                          - matchExpressions:
+                              # - key: topology.kubernetes.io/zone # v1.18+
+                              - key: failure-domain.beta.kubernetes.io/zone
+                                operator: In
+                                values:
+                                - asia-east1-a
+    - name: zone-a-data
+      count: 2
+      config:
+          node.master: false
+          node.data: true
+          node.ingest: false
+          node.ml: false
+          xpack.ml.enabled: true
+          node.store.allow_mmap: true
+          index.store.type: hybridfs
+          cluster.routing.allocation.awareness.attributes: zone
+          node.attr.zone: asia-east1-a
+          cluster.remote.connect: false
+          xpack.security.authc.anonymous.roles: monitoring_user
+      volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data
+        spec:
+            accessModes:
+            - ReadWriteOnce
+            resources:
+                requests:
+                    storage: 512Gi
+            storageClassName: dingo-pdssd
+      podTemplate:
+          metadata:
+              labels:
+                  data: "on"
+          spec:
+              containers:
+              - name: elasticsearch
+                resources:
+                    requests:
+                        memory: 25Gi
+                        cpu: 6500m
+                    limits:
+                        memory: 25Gi
+                        cpu: 6500m
+                env:
+                - name: ES_JAVA_OPTS
+                  value: "-Xms13g -Xmx13g"
+                - name: PRE_STOP_MAX_WAIT_SECONDS
+                  value: "20"
+                - name: PRE_STOP_ADDITIONAL_WAIT_SECONDS
+                  value: "30"
+                - name: READINESS_PROBE_TIMEOUT
+                  value: "10"
+                readinessProbe:
+                    exec:
+                        command:
+                        - bash
+                        - -c
+                        - /mnt/elastic-internal/scripts/readiness-probe-script.sh
+                    failureThreshold: 3
+                    initialDelaySeconds: 10
+                    periodSeconds: 12
+                    successThreshold: 1
+                    timeoutSeconds: 12
+              initContainers:
+              #- name: sysctl
+                 #securityContext:
+                     #priviledged: true
+                #command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+              - name: install-plugins
+                command:
+                - sh
+                - -c
+                - |
+                  bin/elasticsearch-plugin install --batch repository-gcs
+              affinity:
+                  podAntiAffinity:
+                      preferredDuringSchedulingIgnoredDuringExecution:
+                      - weight: 100
+                        podAffinityTerm:
+                            labelSelector:
+                                matchLabels:
+                                    elasticsearch.k8s.elastic.co/cluster-name: dingo
+                            topologyKey: kubernetes.io/hostname
+                  nodeAffinity:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                          nodeSelectorTerms:
+                          - matchExpressions:
+                              # - key: topology.kubernetes.io/zone # v1.18+
+                              - key: failure-domain.beta.kubernetes.io/zone
+                                operator: In
+                                values:
+                                - asia-east1-a
+    - name: zone-a-ingest
+      count: 1
+      config:
+          node.master: false
+          node.data: false
+          node.ingest: true
+          node.ml: false
+          xpack.ml.enabled: true
+          node.store.allow_mmap: false
+          index.store.type: fs
+          cluster.routing.allocation.awareness.attributes: zone
+          node.attr.zone: asia-east1-a
+          cluster.remote.connect: true
+          xpack.security.authc.anonymous.roles: monitoring_user
+      volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data
+        spec:
+            accessModes:
+            - ReadWriteOnce
+            resources:
+                requests:
+                    storage: 40Gi
+            storageClassName: dingo-pdhdd
+      podTemplate:
+          metadata:
+              labels:
+                  ingest: "on"
+          spec:
+              containers:
+              - name: elasticsearch
+                resources:
+                    requests:
+                        memory: 20Gi
+                        cpu: 6500m
+                    limits:
+                        memory: 20Gi
+                        cpu: 6500m
+                env:
+                - name: ES_JAVA_OPTS
+                  value: "-Xms18g -Xmx18g"
+                - name: PRE_STOP_MAX_WAIT_SECONDS
+                  value: "20"
+                - name: PRE_STOP_ADDITIONAL_WAIT_SECONDS
+                  value: "30"
+                - name: READINESS_PROBE_TIMEOUT
+                  value: "10"
+                readinessProbe:
+                    exec:
+                        command:
+                        - bash
+                        - -c
+                        - /mnt/elastic-internal/scripts/readiness-probe-script.sh
+                    failureThreshold: 3
+                    initialDelaySeconds: 10
+                    periodSeconds: 12
+                    successThreshold: 1
+                    timeoutSeconds: 12
+              initContainers:
+              #- name: sysctl
+                 #securityContext:
+                     #priviledged: true
+                #command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+              - name: install-plugins
+                command:
+                - sh
+                - -c
+                - |
+                  bin/elasticsearch-plugin install --batch repository-gcs
+              affinity:
+                  podAntiAffinity:
+                      preferredDuringSchedulingIgnoredDuringExecution:
+                      - weight: 100
+                        podAffinityTerm:
+                            labelSelector:
+                                matchLabels:
+                                    elasticsearch.k8s.elastic.co/cluster-name: dingo
+                            topologyKey: kubernetes.io/hostname
+                  nodeAffinity:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                          nodeSelectorTerms:
+                          - matchExpressions:
+                              # - key: topology.kubernetes.io/zone # v1.18+
+                              - key: failure-domain.beta.kubernetes.io/zone
+                                operator: In
+                                values:
+                                - asia-east1-a
+    - name: zone-a-coord
+      count: 1
+      config:
+          node.master: false
+          node.data: false
+          node.ingest: false
+          node.ml: false
+          xpack.ml.enabled: true
+          node.store.allow_mmap: false
+          index.store.type: fs
+          cluster.routing.allocation.awareness.attributes: zone
+          node.attr.zone: asia-east1-a
+          cluster.remote.connect: true
+          xpack.security.authc.anonymous.roles: monitoring_user
+      volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data
+        spec:
+            accessModes:
+            - ReadWriteOnce
+            resources:
+                requests:
+                    storage: 40Gi
+            storageClassName: dingo-pdhdd
+      podTemplate:
+          metadata:
+              labels:
+                  coord: "on"
+          spec:
+              containers:
+              - name: elasticsearch
+                resources:
+                    requests:
+                        memory: 14Gi
+                        cpu: 4000m
+                    limits:
+                        memory: 14Gi
+                        cpu: 4000m
+                env:
+                - name: ES_JAVA_OPTS
+                  value: "-Xms13g -Xmx13g"
+                - name: PRE_STOP_MAX_WAIT_SECONDS
+                  value: "20"
+                - name: PRE_STOP_ADDITIONAL_WAIT_SECONDS
+                  value: "30"
+                - name: READINESS_PROBE_TIMEOUT
+                  value: "10"
+                readinessProbe:
+                    exec:
+                        command:
+                        - bash
+                        - -c
+                        - /mnt/elastic-internal/scripts/readiness-probe-script.sh
+                    failureThreshold: 3
+                    initialDelaySeconds: 10
+                    periodSeconds: 12
+                    successThreshold: 1
+                    timeoutSeconds: 12
+              initContainers:
+              #- name: sysctl
+                 #securityContext:
+                     #priviledged: true
+                #command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+              - name: install-plugins
+                command:
+                - sh
+                - -c
+                - |
+                  bin/elasticsearch-plugin install --batch repository-gcs
+              affinity:
+                  podAntiAffinity:
+                      preferredDuringSchedulingIgnoredDuringExecution:
+                      - weight: 100
+                        podAffinityTerm:
+                            labelSelector:
+                                matchLabels:
+                                    elasticsearch.k8s.elastic.co/cluster-name: dingo
+                            topologyKey: kubernetes.io/hostname
+                  nodeAffinity:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                          nodeSelectorTerms:
+                          - matchExpressions:
+                              # - key: topology.kubernetes.io/zone # v1.18+
+                              - key: failure-domain.beta.kubernetes.io/zone
+                                operator: In
+                                values:
+                                - asia-east1-a
+    - name: zone-b-master
+      count: 1
+      config:
+          node.master: true
+          node.data: false
+          node.ingest: false
+          node.ml: false
+          xpack.ml.enabled: true
+          node.store.allow_mmap: false
+          index.store.type: niofs
+          cluster.routing.allocation.awareness.attributes: zone
+          node.attr.zone: asia-east1-b
+          cluster.remote.connect: false
+          xpack.security.authc.anonymous.roles: monitoring_user
+      volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data
+        spec:
+            accessModes:
+            - ReadWriteOnce
+            resources:
+                requests:
+                    storage: 80Gi
+            storageClassName: dingo-pdssd-ha
+      podTemplate:
+          metadata:
+              labels:
+                  master: "on"
+          spec:
+              containers:
+              - name: elasticsearch
+                resources:
+                    requests:
+                        memory: 5Gi
+                        cpu: 1000m
+                    limits:
+                        memory: 5Gi
+                        cpu: 1000m
+                env:
+                - name: ES_JAVA_OPTS
+                  value: "-Xms4g -Xmx4g"
+                - name: PRE_STOP_MAX_WAIT_SECONDS
+                  value: "20"
+                - name: PRE_STOP_ADDITIONAL_WAIT_SECONDS
+                  value: "30"
+                - name: READINESS_PROBE_TIMEOUT
+                  value: "10"
+                readinessProbe:
+                    exec:
+                        command:
+                        - bash
+                        - -c
+                        - /mnt/elastic-internal/scripts/readiness-probe-script.sh
+                    failureThreshold: 3
+                    initialDelaySeconds: 10
+                    periodSeconds: 12
+                    successThreshold: 1
+                    timeoutSeconds: 12
+              initContainers:
+              #- name: sysctl
+                 #securityContext:
+                     #priviledged: true
+                #command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+              - name: install-plugins
+                command:
+                - sh
+                - -c
+                - |
+                  bin/elasticsearch-plugin install --batch repository-gcs
+              affinity:
+                  podAntiAffinity:
+                      preferredDuringSchedulingIgnoredDuringExecution:
+                      - weight: 100
+                        podAffinityTerm:
+                            labelSelector:
+                                matchLabels:
+                                    elasticsearch.k8s.elastic.co/cluster-name: dingo
+                            topologyKey: kubernetes.io/hostname
+                  nodeAffinity:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                          nodeSelectorTerms:
+                          - matchExpressions:
+                              # - key: topology.kubernetes.io/zone # v1.18+
+                              - key: failure-domain.beta.kubernetes.io/zone
+                                operator: In
+                                values:
+                                - asia-east1-b
+    - name: zone-b-data
+      count: 2
+      config:
+          node.master: false
+          node.data: true
+          node.ingest: false
+          node.ml: false
+          xpack.ml.enabled: true
+          node.store.allow_mmap: true
+          index.store.type: hybridfs
+          cluster.routing.allocation.awareness.attributes: zone
+          node.attr.zone: asia-east1-b
+          cluster.remote.connect: false
+          xpack.security.authc.anonymous.roles: monitoring_user
+      volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data
+        spec:
+            accessModes:
+            - ReadWriteOnce
+            resources:
+                requests:
+                    storage: 512Gi
+            storageClassName: dingo-pdssd
+      podTemplate:
+          metadata:
+              labels:
+                  data: "on"
+          spec:
+              containers:
+              - name: elasticsearch
+                resources:
+                    requests:
+                        memory: 25Gi
+                        cpu: 6500m
+                    limits:
+                        memory: 25Gi
+                        cpu: 6500m
+                env:
+                - name: ES_JAVA_OPTS
+                  value: "-Xms13g -Xmx13g"
+                - name: PRE_STOP_MAX_WAIT_SECONDS
+                  value: "20"
+                - name: PRE_STOP_ADDITIONAL_WAIT_SECONDS
+                  value: "30"
+                - name: READINESS_PROBE_TIMEOUT
+                  value: "10"
+                readinessProbe:
+                    exec:
+                        command:
+                        - bash
+                        - -c
+                        - /mnt/elastic-internal/scripts/readiness-probe-script.sh
+                    failureThreshold: 3
+                    initialDelaySeconds: 10
+                    periodSeconds: 12
+                    successThreshold: 1
+                    timeoutSeconds: 12
+              initContainers:
+              #- name: sysctl
+                 #securityContext:
+                     #priviledged: true
+                #command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+              - name: install-plugins
+                command:
+                - sh
+                - -c
+                - |
+                  bin/elasticsearch-plugin install --batch repository-gcs
+              affinity:
+                  podAntiAffinity:
+                      preferredDuringSchedulingIgnoredDuringExecution:
+                      - weight: 100
+                        podAffinityTerm:
+                            labelSelector:
+                                matchLabels:
+                                    elasticsearch.k8s.elastic.co/cluster-name: dingo
+                            topologyKey: kubernetes.io/hostname
+                  nodeAffinity:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                          nodeSelectorTerms:
+                          - matchExpressions:
+                              # - key: topology.kubernetes.io/zone # v1.18+
+                              - key: failure-domain.beta.kubernetes.io/zone
+                                operator: In
+                                values:
+                                - asia-east1-b
+    - name: zone-b-ingest
+      count: 1
+      config:
+          node.master: false
+          node.data: false
+          node.ingest: true
+          node.ml: false
+          xpack.ml.enabled: true
+          node.store.allow_mmap: false
+          index.store.type: fs
+          cluster.routing.allocation.awareness.attributes: zone
+          node.attr.zone: asia-east1-b
+          cluster.remote.connect: true
+          xpack.security.authc.anonymous.roles: monitoring_user
+      volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data
+        spec:
+            accessModes:
+            - ReadWriteOnce
+            resources:
+                requests:
+                    storage: 40Gi
+            storageClassName: dingo-pdhdd
+      podTemplate:
+          metadata:
+              labels:
+                  ingest: "on"
+          spec:
+              containers:
+              - name: elasticsearch
+                resources:
+                    requests:
+                        memory: 20Gi
+                        cpu: 6500m
+                    limits:
+                        memory: 20Gi
+                        cpu: 6500m
+                env:
+                - name: ES_JAVA_OPTS
+                  value: "-Xms18g -Xmx18g"
+                - name: PRE_STOP_MAX_WAIT_SECONDS
+                  value: "20"
+                - name: PRE_STOP_ADDITIONAL_WAIT_SECONDS
+                  value: "30"
+                - name: READINESS_PROBE_TIMEOUT
+                  value: "10"
+                readinessProbe:
+                    exec:
+                        command:
+                        - bash
+                        - -c
+                        - /mnt/elastic-internal/scripts/readiness-probe-script.sh
+                    failureThreshold: 3
+                    initialDelaySeconds: 10
+                    periodSeconds: 12
+                    successThreshold: 1
+                    timeoutSeconds: 12
+              initContainers:
+              #- name: sysctl
+                 #securityContext:
+                     #priviledged: true
+                #command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+              - name: install-plugins
+                command:
+                - sh
+                - -c
+                - |
+                  bin/elasticsearch-plugin install --batch repository-gcs
+              affinity:
+                  podAntiAffinity:
+                      preferredDuringSchedulingIgnoredDuringExecution:
+                      - weight: 100
+                        podAffinityTerm:
+                            labelSelector:
+                                matchLabels:
+                                    elasticsearch.k8s.elastic.co/cluster-name: dingo
+                            topologyKey: kubernetes.io/hostname
+                  nodeAffinity:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                          nodeSelectorTerms:
+                          - matchExpressions:
+                              # - key: topology.kubernetes.io/zone # v1.18+
+                              - key: failure-domain.beta.kubernetes.io/zone
+                                operator: In
+                                values:
+                                - asia-east1-b
+    - name: zone-b-coord
+      count: 1
+      config:
+          node.master: false
+          node.data: false
+          node.ingest: false
+          node.ml: false
+          xpack.ml.enabled: true
+          node.store.allow_mmap: false
+          index.store.type: fs
+          cluster.routing.allocation.awareness.attributes: zone
+          node.attr.zone: asia-east1-b
+          cluster.remote.connect: true
+          xpack.security.authc.anonymous.roles: monitoring_user
+      volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data
+        spec:
+            accessModes:
+            - ReadWriteOnce
+            resources:
+                requests:
+                    storage: 40Gi
+            storageClassName: dingo-pdhdd
+      podTemplate:
+          metadata:
+              labels:
+                  coord: "on"
+          spec:
+              containers:
+              - name: elasticsearch
+                resources:
+                    requests:
+                        memory: 14Gi
+                        cpu: 4000m
+                    limits:
+                        memory: 14Gi
+                        cpu: 4000m
+                env:
+                - name: ES_JAVA_OPTS
+                  value: "-Xms13g -Xmx13g"
+                - name: PRE_STOP_MAX_WAIT_SECONDS
+                  value: "20"
+                - name: PRE_STOP_ADDITIONAL_WAIT_SECONDS
+                  value: "30"
+                - name: READINESS_PROBE_TIMEOUT
+                  value: "10"
+                readinessProbe:
+                    exec:
+                        command:
+                        - bash
+                        - -c
+                        - /mnt/elastic-internal/scripts/readiness-probe-script.sh
+                    failureThreshold: 3
+                    initialDelaySeconds: 10
+                    periodSeconds: 12
+                    successThreshold: 1
+                    timeoutSeconds: 12
+              initContainers:
+              #- name: sysctl
+                 #securityContext:
+                     #priviledged: true
+                #command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+              - name: install-plugins
+                command:
+                - sh
+                - -c
+                - |
+                  bin/elasticsearch-plugin install --batch repository-gcs
+              affinity:
+                  podAntiAffinity:
+                      preferredDuringSchedulingIgnoredDuringExecution:
+                      - weight: 100
+                        podAffinityTerm:
+                            labelSelector:
+                                matchLabels:
+                                    elasticsearch.k8s.elastic.co/cluster-name: dingo
+                            topologyKey: kubernetes.io/hostname
+                  nodeAffinity:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                          nodeSelectorTerms:
+                          - matchExpressions:
+                              # - key: topology.kubernetes.io/zone # v1.18+
+                              - key: failure-domain.beta.kubernetes.io/zone
+                                operator: In
+                                values:
+                                - asia-east1-b
+    - name: dingo-ml
+      count: 1
+      config:
+          node.master: false
+          node.data: false
+          node.ingest: false
+          node.ml: true
+          xpack.ml.enabled: true
+          node.store.allow_mmap: false
+          index.store.type: fs
+          cluster.remote.connect: false
+          xpack.security.authc.anonymous.roles: monitoring_user
+      volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data
+        spec:
+            accessModes:
+            - ReadWriteOnce
+            resources:
+                requests:
+                    storage: 40Gi
+            storageClassName: dingo-pdhdd
+      podTemplate:
+          metadata:
+              labels:
+                  ml: "on"
+          spec:
+              containers:
+              - name: elasticsearch
+                resources:
+                    requests:
+                        memory: 5Gi
+                        #cpu: 1
+                    limits:
+                        memory: 5Gi
+                        #cpu: 2
+                env:
+                - name: ES_JAVA_OPTS
+                  value: "-Xms4g -Xmx4g"
+                - name: PRE_STOP_MAX_WAIT_SECONDS
+                  value: "20"
+                - name: PRE_STOP_ADDITIONAL_WAIT_SECONDS
+                  value: "30"
+                - name: READINESS_PROBE_TIMEOUT
+                  value: "10"
+                readinessProbe:
+                    exec:
+                        command:
+                        - bash
+                        - -c
+                        - /mnt/elastic-internal/scripts/readiness-probe-script.sh
+                    failureThreshold: 3
+                    initialDelaySeconds: 10
+                    periodSeconds: 12
+                    successThreshold: 1
+                    timeoutSeconds: 12
+              initContainers:
+              #- name: sysctl
+                 #securityContext:
+                     #priviledged: true
+                #command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+              - name: install-plugins
+                command:
+                - sh
+                - -c
+                - |
+                  bin/elasticsearch-plugin install --batch repository-gcs
+              affinity:
+                  podAntiAffinity:
+                      preferredDuringSchedulingIgnoredDuringExecution:
+                      - weight: 60
+                        podAffinityTerm:
+                            labelSelector:
+                                matchLabels:
+                                    elasticsearch.k8s.elastic.co/cluster-name: dingo
+                            topologyKey: kubernetes.io/hostname

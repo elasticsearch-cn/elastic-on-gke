@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: $K8S_ES_INGEST_SVC_NAME
+    annotations:
+        cloud.google.com/app-protocols: '{"https":"HTTPS"}'
+        #service.alpha.kubernetes.io/app-protocols: '{"https":"HTTPS"}'
+        cloud.google.com/neg: '{"ingress": true}'
+spec:
+    type: NodePort
+    ports:
+    - name: https
+      port: 9200
+      protocol: TCP
+      targetPort: 9200
+    #- name: tcp
+      #port: 9300
+      #protocol: TCP
+      #targetPort: 9300
+    selector:
+        common.k8s.elastic.co/type: elasticsearch
+        elasticsearch.k8s.elastic.co/cluster-name: $ES_CLUSTER_NAME
+        ingest: "on"
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: $K8S_ES_COODR_SVC_NAME
+    annotations:
+        cloud.google.com/app-protocols: '{"https":"HTTPS"}'
+        #service.alpha.kubernetes.io/app-protocols: '{"https":"HTTPS"}'
+        cloud.google.com/neg: '{"ingress": true}'
+spec:
+    type: NodePort
+    ports:
+    - name: https
+      port: 9200
+      protocol: TCP
+      targetPort: 9200
+    #- name: tcp
+      #port: 9300
+      #protocol: TCP
+      #targetPort: 9300
+    selector:
+        common.k8s.elastic.co/type: elasticsearch
+        elasticsearch.k8s.elastic.co/cluster-name: $ES_CLUSTER_NAME
+        coord: "on"
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: $K8S_KIBANA_SVC_NAME
+    annotations:
+        cloud.google.com/app-protocols: '{"https":"HTTPS"}'
+        #service.alpha.kubernetes.io/app-protocols: '{"https":"HTTPS"}'
+        cloud.google.com/neg: '{"ingress": true}'
+spec:
+    type: NodePort
+    ports:
+    - name: https
+      port: 5601
+      protocol: TCP
+      targetPort: 5601
+    selector:
+        common.k8s.elastic.co/type: kibana
+        k8na: "on"
+---
+# https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+    name: $K8S_INGRESS_NAME
+    annotations:
+        kubernetes.io/ingress.global-static-ip-name: "$GCIP_NAME"
+        kubernetes.io/ingress.class: gce
+        kubernetes.io/ingress.allow-http: "false"
+        networking.gke.io/managed-certificates: $K8S_CERT_NAME
+spec:
+    # https://github.com/kubernetes/ingress-gce/blob/master/pkg/loadbalancers/l7.go#L149
+    # https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs
+    # https://kubernetes.io/docs/concepts/services-networking/ingress/
+    # tls:
+    # - hosts: 
+    #   - $K8S_ES_INGRESS_DOMAINS
+    #   - $K8S_ES_COODR_DOMAINS
+    #   - $K8S_ES_KIBANA_DOMAINS
+    #  secretName: dingo-es-tls
+    rules:
+    - host: $K8S_ES_INGRESS_DOMAINS
+      http:
+          paths:
+              - backend:
+                  serviceName: $K8S_ES_INGEST_SVC_NAME
+                  servicePort: 9200
+    - host: $K8S_ES_COODR_DOMAINS
+      http:
+          paths:
+              - backend:
+                  serviceName: $K8S_ES_COODR_SVC_NAME
+                  servicePort: 9200
+    - host: $K8S_ES_KIBANA_DOMAINS
+      http:
+          paths:
+              - backend:
+                  serviceName: $K8S_KIBANA_SVC_NAME
+                  servicePort: 5601

@@ -1,0 +1,23 @@
+apiVersion: apm.k8s.elastic.co/v1
+kind: ApmServer
+metadata:
+      name: dingo-apm
+spec:
+    version: 7.6.2
+    count: 1
+    elasticsearchRef:
+        name: dingo
+    podTemplate:
+        metadata:
+            labels:
+                apm: "on"
+        spec:
+            containers:
+            - name: apm-server
+              resources:
+                  requests:
+                      memory: 1Gi
+                      #cpu: 1
+                  limits:
+                      memory: 2Gi
+                      #cpu: 2

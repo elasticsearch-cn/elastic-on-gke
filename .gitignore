@@ -1,0 +1,4 @@
+conf/gcs.client.default.credentials_file
+deploy
+conf/configure.ini
+conf/*.bak

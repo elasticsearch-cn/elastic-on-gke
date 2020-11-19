@@ -1,0 +1,81 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+    name: $ES_CLUSTER_NAME
+spec:
+    version: 7.9.3
+    #http:
+        #service:
+            #spec:
+                #type: LoadBalancer
+    secureSettings:
+    - secretName: $ES_BACKUP_SERVICE_ACCOUNT_NAME
+    nodeSets:
+    - name: dingli
+      count: $ES_CLUSTER_SIZE
+      config:
+          node.master: true
+          node.data: true
+          node.ingest: true
+          node.ml: true
+          xpack.ml.enabled: true
+          node.store.allow_mmap: true
+          index.store.type: hybridfs
+          cluster.remote.connect: true
+          xpack.security.authc.anonymous.roles: monitoring_user
+      volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data
+        spec:
+            accessModes:
+            - ReadWriteOnce
+            resources:
+                requests:
+                    storage: 10Gi
+            storageClassName: dingo-pdssd
+      podTemplate:
+          metadata:
+              labels:
+                  ingest: "on"
+                  coord: "on"
+          spec:
+              containers:
+              - name: elasticsearch
+                resources:
+                    requests:
+                        memory: 24Gi
+                        cpu: 6500m
+                    limits:
+                        memory: 24Gi
+                        cpu: 6500m
+                env:
+                - name: ES_JAVA_OPTS
+                  value: "-Xms12g -Xmx12g"
+                - name: PRE_STOP_MAX_WAIT_SECONDS
+                  value: "20"
+                - name: PRE_STOP_ADDITIONAL_WAIT_SECONDS
+                  value: "30"
+                - name: READINESS_PROBE_TIMEOUT
+                  value: "10"
+                readinessProbe:
+                    exec:
+                        command:
+                        - bash
+                        - -c
+                        - /mnt/elastic-internal/scripts/readiness-probe-script.sh
+                    failureThreshold: 3
+                    initialDelaySeconds: 10
+                    periodSeconds: 12
+                    successThreshold: 1
+                    timeoutSeconds: 12
+              initContainers:
+              #- name: sysctl
+                 #securityContext:
+                     #priviledged: true
+                #command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+              - name: install-plugins
+                command:
+                - sh
+                - -c
+                - |
+                  bin/elasticsearch-plugin install --batch repository-gcs

@@ -1,0 +1,37 @@
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+    name: $K8S_KIBANA_METADATA_NAME
+spec:
+    version: $ES_VERSION
+    count: 1
+    #http:
+        #service:
+            #spec:
+                #type: LoadBalancer
+    config:
+        elasticsearch.requestHeadersWhitelist:
+        - authorization
+    elasticsearchRef:
+        name: $ES_CLUSTER_NAME
+        # namespace: default
+    podTemplate:
+        metadata:
+            labels:
+                k8na: "on"
+        spec:
+            containers:
+            - name: kibana
+              resources:
+                  requests:
+                      memory: 4Gi
+                      #cpu: 1
+                  limits:
+                      memory: 4Gi
+                      #cpu: 2
+            #   readinessProbe:
+            #       exec:
+            #           command:
+            #           - bash
+            #           - -c
+            #           - curl -o /dev/null -w "%{http_code}" https://127.0.0.1:5601/login -k -s

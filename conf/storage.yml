@@ -1,0 +1,71 @@
+apiVersion: storage.k8s.io/v1 
+kind: StorageClass 
+metadata: 
+    name: dingo-pdssd
+provisioner: kubernetes.io/gce-pd 
+parameters:
+    type: pd-ssd
+    fstype: ext4
+    replication-type: none
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: storage.k8s.io/v1 
+kind: StorageClass 
+metadata: 
+    name: dingo-pdssd-ha
+provisioner: kubernetes.io/gce-pd 
+parameters:
+    type: pd-ssd
+    fstype: ext4
+    replication-type: regional-pd
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: storage.k8s.io/v1 
+kind: StorageClass 
+metadata: 
+    name: dingo-pdssd-balanced
+provisioner: kubernetes.io/gce-pd
+parameters:
+    type: pd-balanced
+    fstype: ext4
+    replication-type: none
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: storage.k8s.io/v1 
+kind: StorageClass 
+metadata: 
+    name: dingo-pdssd-balanced-ha
+provisioner: kubernetes.io/gce-pd
+parameters:
+    type: pd-balanced
+    fstype: ext4
+    replication-type: regional-pd
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: storage.k8s.io/v1 
+kind: StorageClass 
+metadata: 
+    name: dingo-pdhdd
+provisioner: kubernetes.io/gce-pd 
+parameters:
+    type: pd-standard
+    fstype: ext4
+    replication-type: none
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: storage.k8s.io/v1 
+kind: StorageClass 
+metadata: 
+    name: dingo-pdhdd-ha
+provisioner: kubernetes.io/gce-pd 
+parameters:
+    type: pd-standard
+    fstype: ext4
+    replication-type: regional-pd
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer

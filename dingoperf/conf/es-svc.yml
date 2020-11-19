@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: es
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+spec:
+  type: ClusterIP
+  selector:
+    ingest: "on"
+    coord: "on"
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 9200
