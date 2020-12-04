@@ -104,6 +104,9 @@ By now, in your *working directory*, you should be able to run `cat ./conf/gcs.c
 
 `./bin/deploy.sh -m gke -a create`
 
+#### 生成k8s配置
+
+`./bin/deploy.sh -m temp -a debug`
 #### 部署es
 
 `./bin/deploy.sh -m es -a deploy`
