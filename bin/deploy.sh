@@ -8,8 +8,8 @@ export PWD
 MODULE=
 ACT=
 
-if [ ! -d "$PWD/deploy" ];then
-    mkdir "$PWD/deploy"
+if [ ! -d "$PWD/../deploy" ];then
+    mkdir "$PWD/../deploy"
 fi
 
 

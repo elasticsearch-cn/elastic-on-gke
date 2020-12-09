@@ -23,5 +23,5 @@ spec:
                     restartPolicy: OnFailure
                     volumes:
                     - name: es-basic-auth
-                        secret:
-                            secretName: elasticsearch-sample-elastic-user
+                    secret:
+                        secretName: elasticsearch-sample-elastic-user
