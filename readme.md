@@ -232,7 +232,7 @@ Basically, the above code does two things
 
 ##### Option 3: Internal access only
 
-(TBD)
+[infini gateway](https://hub.docker.com/r/medcl/infini-gateway)
 
 ### Deploy Elasticsearch Cluster
 
