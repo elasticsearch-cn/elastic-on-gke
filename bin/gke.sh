@@ -58,7 +58,7 @@ __create() {
     kubectl apply -f $pwd/conf/node-daemon.yml
 
     # Install ECK: deploy Elastic operator
-    # https://download.elastic.co/downloads/eck/1.3.0/all-in-one.yaml
+    # https://download.elastic.co/downloads/eck/1.3.1/all-in-one.yaml
     kubectl apply -f $pwd/conf/all-in-one.yaml
 
     # create storage class
