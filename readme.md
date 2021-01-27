@@ -20,7 +20,7 @@ Now we are good to go!
 
 ## Quickstart 快速开始
 
-Check the [Advanced topics](https://github.com/bindiego/local_services/tree/develop/k8s/gke/elastic#advanced-topics) if you would like to:
+Check the [Advanced topics](https://github.com/elasticsearch-cn/elastic-on-gke#advanced-topics) if you would like to:
 
 - Customize the size of your k8s/GKE nodes and pools
 - Elasticsearch topology
@@ -44,7 +44,7 @@ Change the `region` variable on your choice, `asia-east1` by default.
 
 #### Choose a predefined Elasticsearch deployment
 
-You can later adjust all these settings to archieve your own goal. We will discuss more in [Advanced topics](https://github.com/bindiego/local_services/tree/develop/k8s/gke/elastic#advanced-topics).
+You can later adjust all these settings to archieve your own goal. We will discuss more in [Advanced topics](https://github.com/elasticsearch-cn/elastic-on-gke#advanced-topics).
 
 ##### Option 1: Single node 单节点（适合研发小伙伴）
 
@@ -80,7 +80,7 @@ Please consult [How to create & manage service accounts](https://cloud.google.co
 
 or Run `./bin/gcs_serviceaccount.sh` to create a service account and generate the json file to `./conf/gcs.client.default.credentials_file`. Please change the varialbes in the `./bin/gcs_serviceaccount.sh` for your environment.
 
-By now, in your *working directory*, you should be able to run `cat ./conf/gcs.client.default.credentials_file` to check the existence and the contents of the file. If you didn't do this, the auto script will later use `$GOOGLE_APPLICATION_CREDENTIALS`  environment variable to copy that file to the destination. You cannot skip this by now let's talk about how to disble in [Advanced topics](https://github.com/bindiego/local_services/tree/develop/k8s/gke/elastic#advanced-topics) if you really have to. 
+By now, in your *working directory*, you should be able to run `cat ./conf/gcs.client.default.credentials_file` to check the existence and the contents of the file. If you didn't do this, the auto script will later use `$GOOGLE_APPLICATION_CREDENTIALS`  environment variable to copy that file to the destination. You cannot skip this by now let's talk about how to disble in [Advanced topics](https://github.com/elasticsearch-cn/elastic-on-gke#advanced-topics) if you really have to. 
 
 ---
 
