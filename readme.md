@@ -68,7 +68,7 @@ Run `make init_allrole`
 | Coordinating x 1 | Coordinating x 1 |
 | ML x 1 | on any available node      |
 
-You could even further adjust this to a single zone or 3 zones with forced shared allocation awareness, let's discuss more details in the [Advanced topics](https://github.com/bindiego/local_services/tree/develop/k8s/gke/elastic#advanced-topics) so you could configure based on your needs.
+You could even further adjust this to a single zone or 3 zones with forced shared allocation awareness, let's discuss more details in the [Advanced topics](https://github.com/elasticsearch-cn/elastic-on-gke#advanced-topics) so you could configure based on your needs.
 
 Run `make init_prod`
 
@@ -439,7 +439,13 @@ type: regional HDD
 
 best for: Data nodes (cold)
 
-### Elasticsearch nodes topology
+### Elasticsearch nodes topology, affinity & node/pool selection
+
+Topology is defined by `spec.nodeSets`, you may adjust accordingly to your design apart from the [predefined ones](https://github.com/elasticsearch-cn/elastic-on-gke#choose-a-predefined-elasticsearch-deployment)
+
+Affnity is controlled in [deployment yaml](https://github.com/elasticsearch-cn/elastic-on-gke/blob/develop/templates/es.prod.yml#L85), used to do shard allocation awareness etc. 
+
+GKE specific **node pool** selection is configured in [deployment yaml](https://github.com/elasticsearch-cn/elastic-on-gke/blob/develop/templates/es.prod.yml#L83), this could speparate different roles with different k8s/GKE nodes. E.g. Kibana, APM server and various Elasticsearch nodes.
 
 ### k8s/GKE cluster node & Elasticsearch node sizing
 
