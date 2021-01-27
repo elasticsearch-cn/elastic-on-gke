@@ -80,6 +80,8 @@ spec:
                 - -c
                 - |
                   bin/elasticsearch-plugin install --batch repository-gcs
+              nodeSelector:
+                  cloud.google.com/gke-nodepool: default-pool
               affinity:
                   nodeAffinity:
                       requiredDuringSchedulingIgnoredDuringExecution:
@@ -159,6 +161,8 @@ spec:
                 - -c
                 - |
                   bin/elasticsearch-plugin install --batch repository-gcs
+              nodeSelector:
+                  cloud.google.com/gke-nodepool: default-pool
               affinity:
                   podAntiAffinity:
                       preferredDuringSchedulingIgnoredDuringExecution:
@@ -246,6 +250,8 @@ spec:
                 - -c
                 - |
                   bin/elasticsearch-plugin install --batch repository-gcs
+              nodeSelector:
+                  cloud.google.com/gke-nodepool: default-pool
               affinity:
                   podAntiAffinity:
                       preferredDuringSchedulingIgnoredDuringExecution:
@@ -333,6 +339,8 @@ spec:
                 - -c
                 - |
                   bin/elasticsearch-plugin install --batch repository-gcs
+              nodeSelector:
+                  cloud.google.com/gke-nodepool: default-pool
               affinity:
                   podAntiAffinity:
                       preferredDuringSchedulingIgnoredDuringExecution:
@@ -420,6 +428,8 @@ spec:
                 - -c
                 - |
                   bin/elasticsearch-plugin install --batch repository-gcs
+              nodeSelector:
+                  cloud.google.com/gke-nodepool: default-pool
               affinity:
                   podAntiAffinity:
                       preferredDuringSchedulingIgnoredDuringExecution:
@@ -507,6 +517,8 @@ spec:
                 - -c
                 - |
                   bin/elasticsearch-plugin install --batch repository-gcs
+              nodeSelector:
+                  cloud.google.com/gke-nodepool: default-pool
               affinity:
                   podAntiAffinity:
                       preferredDuringSchedulingIgnoredDuringExecution:
@@ -594,6 +606,8 @@ spec:
                 - -c
                 - |
                   bin/elasticsearch-plugin install --batch repository-gcs
+              nodeSelector:
+                  cloud.google.com/gke-nodepool: default-pool
               affinity:
                   podAntiAffinity:
                       preferredDuringSchedulingIgnoredDuringExecution:
@@ -681,6 +695,8 @@ spec:
                 - -c
                 - |
                   bin/elasticsearch-plugin install --batch repository-gcs
+              nodeSelector:
+                  cloud.google.com/gke-nodepool: default-pool
               affinity:
                   podAntiAffinity:
                       preferredDuringSchedulingIgnoredDuringExecution:
@@ -766,6 +782,8 @@ spec:
                 - -c
                 - |
                   bin/elasticsearch-plugin install --batch repository-gcs
+              nodeSelector:
+                  cloud.google.com/gke-nodepool: default-pool
               affinity:
                   podAntiAffinity:
                       preferredDuringSchedulingIgnoredDuringExecution:
