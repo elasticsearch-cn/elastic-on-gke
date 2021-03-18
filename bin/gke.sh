@@ -10,7 +10,7 @@ project_id=google.com:bin-wus-learning-center
 default_pool=default-pool
 nodes_per_zone=5 # per zone
 machine_type=n2-standard-8
-gke_version=1.17.13-gke.2001
+gke_version=1.17.17-gke.1101
 
 __usage() {
     echo "Usage: ./bin/gke.sh {create|(delete,del,d)|scale|fix}"
