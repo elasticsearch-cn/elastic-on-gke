@@ -14,7 +14,9 @@ __init_gcp_credentials() {
 }
 
 __deploy() {
+    set +e
     __init_gcp_credentials
+    set -e
 
     kubectl apply -f "$PWD"/deploy/es."$ES_CLUSTER_TYPE".yml
 }
