@@ -294,6 +294,9 @@ def generate_lb():
                     'ES_CLUSTER_NAME')
             elif i['spec']['selector'].get('k8na') == 'on':
                 i['metadata']['name'] = config.get('K8S_KIBANA_SVC_NAME')
+                i['metadata']['annotations']['cloud.google.com/backend-config'] = '{"ports": {"5601":"%s-bc"}}' % config.get('K8S_KIBANA_SVC_NAME')
+        elif i['kind'] == 'BackendConfig':
+            i['metadata']['name'] = config.get('K8S_KIBANA_SVC_NAME') + '-bc'
         elif i['kind'] == 'Ingress':
             i['metadata']['name'] = config.get('K8S_INGRESS_NAME')
             i['metadata']['annotations']['kubernetes.io/ingress.global-static-ip-name'] = config.get(
@@ -321,11 +324,11 @@ def generate_lb():
                     i['spec']['rules'][n]['http']['paths'][0]['backend']['serviceName'] = config.get(
                         'K8S_KIBANA_SVC_NAME')
 
-            if i['spec']['tls']:
-                i['spec']['tls'][0]['hosts'] = [config.get(
-                    'K8S_ES_INGRESS_DOMAINS'), config.get(
-                    'K8S_ES_COODR_DOMAINS'), config.get(
-                    'K8S_ES_KIBANA_DOMAINS')]
+            # if i['spec']['tls']:
+            #     i['spec']['tls'][0]['hosts'] = [config.get(
+            #         'K8S_ES_INGRESS_DOMAINS'), config.get(
+            #         'K8S_ES_COODR_DOMAINS'), config.get(
+            #         'K8S_ES_KIBANA_DOMAINS')]
 
     dump_all(deploy_path + 'lb.yml', s)
     print_diff(load_all(fp), s, '对比 lb.yml 修改的部分')
