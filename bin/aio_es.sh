@@ -10,11 +10,13 @@ __usage() {
 __init_gcp_credentials() {
     # FIXME: you may want a minimum privilege service account here just for GCS
     [ -f $PWD/conf/gcs.client.default.credentials_file ] || \
-        cp $GOOGLE_APPLICATION_CREDENTIALS $PWD/conf/gcs.client.default.credentials_file
+        cp $GOOGLE_APPLICATION_CREDENTIALS $PWD/conf/gcs.client.default.credentials_file &>>/dev/null
 }
 
 __deploy() {
+    set +e
     __init_gcp_credentials
+    set -e
 
     kubectl apply -f "$PWD"/deploy/es."$ES_CLUSTER_TYPE".yml
 }

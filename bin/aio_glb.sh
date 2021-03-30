@@ -18,8 +18,9 @@ __release_ip() {
 
 __cert() {
     # delete the certificate
+    set +e
     kubectl delete -f "$PWD"/deploy/cert.yml
-
+    set -e
     # create the certificate
     kubectl apply -f "$PWD"/deploy/cert.yml
 
@@ -36,9 +37,9 @@ __deploy() {
 }
 
 __dns() {
-
+    set +e
     __clean_dns
-
+    set -e
     gclb_ip=$(gcloud compute addresses describe $GCIP_NAME --global --project "${GKE_PROJECT_ID}" | grep "address:" | cut -d ' ' -f 2)
 
     gcloud dns --project "${GKE_PROJECT_ID}" record-sets transaction start --zone="$ES_DOMAINS_ZONE"
@@ -78,7 +79,6 @@ __clean() {
 
     kubectl delete -f "$PWD"/deploy/lb.yml
 
-    __clean_dns
 }
 
 __main() {
@@ -106,6 +106,9 @@ __main() {
             ;;
         clean)
             __clean
+            ;;
+        clean_dns)
+            __clean_dns
             ;;
         *)
             __usage

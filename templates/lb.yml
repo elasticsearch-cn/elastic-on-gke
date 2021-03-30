@@ -46,6 +46,17 @@ spec:
         elasticsearch.k8s.elastic.co/cluster-name: dingo
         coord: "on"
 ---
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: dingo-kbn-svc-bc
+spec:
+  healthCheck:
+    checkIntervalSec: 15
+    port: 5601
+    type: HTTPS
+    requestPath: /login
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -54,6 +65,7 @@ metadata:
         cloud.google.com/app-protocols: '{"https":"HTTPS"}'
         #service.alpha.kubernetes.io/app-protocols: '{"https":"HTTPS"}'
         cloud.google.com/neg: '{"ingress": true}'
+        cloud.google.com/backend-config: '{"ports": {"5601":"dingo-kbn-svc-bc"}}'
 spec:
     type: NodePort
     ports:
@@ -79,11 +91,11 @@ spec:
     # https://github.com/kubernetes/ingress-gce/blob/master/pkg/loadbalancers/l7.go#L149
     # https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs
     # https://kubernetes.io/docs/concepts/services-networking/ingress/
-    tls:
-    - hosts: 
-      - k8es.ingest.bindiego.com
-      - k8es.client.bindiego.com
-      - k8na.bindiego.com
+    # tls:
+    # - hosts: 
+    #   - k8es.ingest.bindiego.com
+    #   - k8es.client.bindiego.com
+    #   - k8na.bindiego.com
     #  secretName: dingo-es-tls
     rules:
     - host: k8es.ingest.bindiego.com
