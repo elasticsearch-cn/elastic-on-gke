@@ -10,7 +10,8 @@ project_id=google.com:bin-wus-learning-center
 default_pool=default-pool
 nodes_per_zone=5 # per zone
 machine_type=n2-standard-8
-gke_version=1.17.17-gke.1101
+release_channel=None # None -> static, e.g. rapid, regular, stable
+gke_version=1.18.16-gke.2100
 
 __usage() {
     echo "Usage: ./bin/gke.sh {create|(delete,del,d)|scale|fix}"
@@ -26,7 +27,8 @@ __create() {
         --node-locations "${region}-a","${region}-b" \
         --no-enable-basic-auth \
         --enable-dataplane-v2 \
-        --cluster-version $gke_version \
+        --release-channel "${release_channel}" \
+        --cluster-version "${gke_version}" \
         --machine-type "$machine_type" \
         --image-type "COS" \
         --disk-type "pd-ssd" \
@@ -58,7 +60,7 @@ __create() {
     kubectl apply -f $pwd/conf/node-daemon.yml
 
     # Install ECK: deploy Elastic operator
-    # https://download.elastic.co/downloads/eck/1.3.1/all-in-one.yaml
+    # https://download.elastic.co/downloads/eck/1.5.0/all-in-one.yaml
     kubectl apply -f $pwd/conf/all-in-one.yaml
 
     # create storage class
