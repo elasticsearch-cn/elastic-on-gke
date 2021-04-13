@@ -37,6 +37,10 @@ __password() {
     kubectl get secret ${es_cluster_name}-es-elastic-user -o=jsonpath='{.data.elastic}' | base64 --decode
 }
 
+__password_reset() {
+    kubectl delete secret ${es_cluster_name}-es-elastic-user
+}
+
 __main() {
     if [ $# -eq 0 ]
     then
@@ -48,6 +52,9 @@ __main() {
                 ;;
             password|pwd|pw|p)
                 __password
+                ;;
+            pwdreset|pwreset)
+                __password_reset
                 ;;
             status|s)
                 __status

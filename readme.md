@@ -346,7 +346,7 @@ kind: Kibana
 metadata:
   name: kbn
   spec:
-    version: 7.10.2
+    version: 7.11.2
     count: 1
     config:
       elasticsearch.hosts:
@@ -364,7 +364,7 @@ kind: Kibana
 metadata:
   name: kbn
 spec:
-  version: 7.10.2
+  version: 7.11.2
   count: 1
   config:
     elasticsearch.hosts:
@@ -392,6 +392,16 @@ spec:
 (TBD)
 
 ---
+
+## Utils 工具
+
+### Retrieve Elasticsearch `elastic` user password 查询 `elastic` 用户密码
+
+`./bin/es.sh pw`
+
+### Reset / Rotate `elastic` user password 重制 `elastic` 用户密码
+
+`./bin/es.sh pwreset`
 
 ## Advanced topics
 
