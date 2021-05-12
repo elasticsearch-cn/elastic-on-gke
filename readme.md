@@ -346,7 +346,7 @@ kind: Kibana
 metadata:
   name: kbn
   spec:
-    version: 7.11.2
+    version: 7.12.1
     count: 1
     config:
       elasticsearch.hosts:
@@ -364,7 +364,7 @@ kind: Kibana
 metadata:
   name: kbn
 spec:
-  version: 7.11.2
+  version: 7.12.1
   count: 1
   config:
     elasticsearch.hosts:
