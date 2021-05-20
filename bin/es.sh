@@ -34,7 +34,8 @@ __status() {
 }
 
 __password() {
-    kubectl get secret ${es_cluster_name}-es-elastic-user -o=jsonpath='{.data.elastic}' | base64 --decode
+    # kubectl get secret ${es_cluster_name}-es-elastic-user -o=jsonpath='{.data.elastic}' | base64 --decode
+    kubectl get secret ${es_cluster_name}-es-elastic-user -o go-template='{{.data.elastic | base64decode}}'
 }
 
 __password_reset() {

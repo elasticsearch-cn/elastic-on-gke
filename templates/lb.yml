@@ -65,7 +65,7 @@ metadata:
         cloud.google.com/app-protocols: '{"https":"HTTPS"}'
         #service.alpha.kubernetes.io/app-protocols: '{"https":"HTTPS"}'
         cloud.google.com/neg: '{"ingress": true}'
-        cloud.google.com/backend-config: '{"ports": {"5601":"dingo-kbn-svc-bc"}}'
+        #cloud.google.com/backend-config: '{"ports": {"5601":"dingo-kbn-svc-bc"}}'
 spec:
     type: NodePort
     ports:
@@ -77,8 +77,28 @@ spec:
         common.k8s.elastic.co/type: kibana
         k8na: "on"
 ---
+apiVersion: v1
+kind: Service
+metadata:
+    name: dingo-apm-svc
+    annotations:
+        cloud.google.com/app-protocols: '{"https":"HTTPS"}'
+        #service.alpha.kubernetes.io/app-protocols: '{"https":"HTTPS"}'
+        cloud.google.com/neg: '{"ingress": true}'
+        #cloud.google.com/backend-config: '{"ports": {"5601":"dingo-kbn-svc-bc"}}'
+spec:
+    type: NodePort
+    ports:
+    - name: https
+      port: 8200
+      protocol: TCP
+      targetPort: 8200
+    selector:
+        common.k8s.elastic.co/type: apm-server
+        apm: "on"
+---
 # https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
     name: dingo-elk-ingress
@@ -91,28 +111,51 @@ spec:
     # https://github.com/kubernetes/ingress-gce/blob/master/pkg/loadbalancers/l7.go#L149
     # https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs
     # https://kubernetes.io/docs/concepts/services-networking/ingress/
-    # tls:
-    # - hosts: 
-    #   - k8es.ingest.bindiego.com
-    #   - k8es.client.bindiego.com
-    #   - k8na.bindiego.com
+    #tls:
+    #- hosts: 
+    #  - k8es.ingest.bindiego.com
+    #  - k8es.client.bindiego.com
+    #  - k8na.bindiego.com
+    #  - k8apm.bindiego.com
     #  secretName: dingo-es-tls
     rules:
     - host: k8es.ingest.bindiego.com
       http:
           paths:
-              - backend:
-                  serviceName: dingo-ingest-svc
-                  servicePort: 9200
+          - pathType: Prefix 
+            path: "/*"
+            backend:
+                service:
+                    name: dingo-ingest-svc
+                    port: 
+                        number: 9200
     - host: k8es.client.bindiego.com
       http:
           paths:
-              - backend:
-                  serviceName: dingo-coord-svc
-                  servicePort: 9200
+          - pathType: Prefix 
+            path: "/*"
+            backend:
+                service:
+                    name: dingo-coord-svc
+                    port: 
+                        number: 9200
     - host: k8na.bindiego.com
       http:
           paths:
-              - backend:
-                  serviceName: dingo-kbn-svc
-                  servicePort: 5601
+          - pathType: Prefix 
+            path: "/*"
+            backend:
+                service:
+                    name: dingo-kbn-svc
+                    port: 
+                        number: 5601
+    - host: k8apm.bindiego.com
+      http:
+          paths:
+          - pathType: Prefix 
+            path: "/*"
+            backend:
+                service:
+                    name: dingo-apm-svc
+                    port: 
+                        number: 8200

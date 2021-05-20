@@ -4,7 +4,7 @@
 
 pwd=`pwd`
 
-kbn_name=kbn
+kbn_name=dingo-kbn
 
 __usage() {
     echo "Usage: ./bin/kbn.sh {deploy|status|clean}"

@@ -6,6 +6,7 @@ init:
 	@[ -f deploy/cert.yml ] || cp -a templates/cert.yml deploy/
 	@[ -f deploy/kbn.yml ] || cp -a templates/kbn.yml deploy/
 	@[ -f deploy/lb.yml ] || cp -a templates/lb.yml deploy/
+	@[ -f deploy/apm.yml ] || cp -a templates/apm.yml deploy/
 
 init_single: init
 	@cp -a templates/es.single_node.yml deploy/es.yml

@@ -3,10 +3,12 @@ kind: ApmServer
 metadata:
       name: dingo-apm
 spec:
-    version: 7.10.2
+    version: 7.12.1
     count: 1
     elasticsearchRef:
         name: dingo
+    kibanaRef:
+        name: dingo-kbn
     podTemplate:
         metadata:
             labels:
@@ -16,8 +18,8 @@ spec:
             - name: apm-server
               resources:
                   requests:
-                      memory: 1Gi
-                      #cpu: 1
+                      memory: 4Gi
+                      cpu: 1400m
                   limits:
-                      memory: 2Gi
-                      #cpu: 2
+                      memory: 4Gi
+                      cpu: 1400m

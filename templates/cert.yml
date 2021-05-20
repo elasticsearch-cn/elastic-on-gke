@@ -7,7 +7,7 @@
 #    tls.crt: base64 encoded cert
 #    tls.key: base64 encoded key
 #type: kubernetes.io/tls
-apiVersion: networking.gke.io/v1beta2
+apiVersion: networking.gke.io/v1
 kind: ManagedCertificate
 metadata:
     name: dingo-es-cert-gcp-managed
@@ -16,3 +16,4 @@ spec:
     - k8es.ingest.bindiego.com
     - k8es.client.bindiego.com
     - k8na.bindiego.com
+    - k8apm.bindiego.com

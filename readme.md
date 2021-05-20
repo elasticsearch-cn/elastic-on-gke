@@ -180,8 +180,8 @@ Optionally, you may want to add a DNS **CAA** record to specify the authority wh
 
 You will need to update 2 files now,
 
-- `./deploy/cert.yml`
-- `./deploy/lb.yml`
+- `./deploy/cert.yml` consult the template [`cert.yml`](https://github.com/elasticsearch-cn/elastic-on-gke/blob/develop/templates/cert.yml)
+- `./deploy/lb.yml` consult the template [`lb.yml`](https://github.com/elasticsearch-cn/elastic-on-gke/blob/develop/templates/lb.yml)
 
 Better do a quick `find & replace` in the text editor of your choice to have those domains configured properly according to your environment.
 
@@ -189,7 +189,7 @@ Once you done, it's the time to run `./bin/glb.sh cert`, wait the last step to d
 
 ##### Option 2: Regional TCP LB
 
-This one is really simple, depends on which service you would like to expose, simply uncomment the `spec.http` sections in either [`./deploy/es.yml`](https://github.com/bindiego/local_services/blob/develop/k8s/gke/elastic/templates/es.all_role.yml#L7-L10) or [`./deploy/kbn.yml`](https://github.com/bindiego/local_services/blob/develop/k8s/gke/elastic/templates/kbn.yml#L8-L11) or both. And you **do not** need to deploy the GLB in the end as you will do for option 1.
+This one is really simple, depends on which service you would like to expose, simply uncomment the `spec.http` sections in either [`./deploy/es.yml`](https://github.com/elasticsearch-cn/elastic-on-gke/blob/develop/templates/es.all_role.yml#L7-L10) or [`./deploy/kbn.yml`](https://github.com/elasticsearch-cn/elastic-on-gke/blob/develop/templates/kbn.yml#L8-L11) or both. And you **do not** need to deploy the GLB in the end as you will do for option 1.
 
 This will setup up regional TCP LB for your deployments respectively. Make sure you access the `ip:port` by using **`https`** protocol.
 
@@ -389,7 +389,7 @@ spec:
 
 ## APM Server
 
-(TBD)
+Use the `./bin/apm.sh` script for `deploy`, `clean`, `password`
 
 ---
 
