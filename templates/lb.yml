@@ -122,7 +122,7 @@ spec:
     - host: k8es.ingest.bindiego.com
       http:
           paths:
-          - pathType: Prefix 
+          - pathType: ImplementationSpecific 
             path: "/*"
             backend:
                 service:
@@ -132,7 +132,7 @@ spec:
     - host: k8es.client.bindiego.com
       http:
           paths:
-          - pathType: Prefix 
+          - pathType: ImplementationSpecific 
             path: "/*"
             backend:
                 service:
@@ -142,7 +142,7 @@ spec:
     - host: k8na.bindiego.com
       http:
           paths:
-          - pathType: Prefix 
+          - pathType: ImplementationSpecific 
             path: "/*"
             backend:
                 service:
@@ -152,7 +152,7 @@ spec:
     - host: k8apm.bindiego.com
       http:
           paths:
-          - pathType: Prefix 
+          - pathType: ImplementationSpecific 
             path: "/*"
             backend:
                 service:
