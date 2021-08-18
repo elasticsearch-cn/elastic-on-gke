@@ -1,6 +1,32 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
+    name: dingo-pdssd-extreme
+provisioner: kubernetes.io/gce-pd
+parameters:
+    type: pd-extreme
+    fstype: ext4
+    replication-type: none
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+    name: dingo-pdssd-extreme-ha
+provisioner: kubernetes.io/gce-pd
+parameters:
+    type: pd-extreme
+    fstype: ext4
+    replication-type: regional-pd
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
     name: dingo-pdssd
 provisioner: kubernetes.io/gce-pd
 parameters:
