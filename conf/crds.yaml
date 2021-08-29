@@ -8,7 +8,7 @@ metadata:
   labels:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
-    app.kubernetes.io/version: '1.7.0'
+    app.kubernetes.io/version: '1.7.1'
   name: agents.agent.k8s.elastic.co
 spec:
   group: agent.k8s.elastic.co
@@ -462,7 +462,7 @@ metadata:
   labels:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
-    app.kubernetes.io/version: '1.7.0'
+    app.kubernetes.io/version: '1.7.1'
   name: apmservers.apm.k8s.elastic.co
 spec:
   group: apm.k8s.elastic.co
@@ -1133,7 +1133,7 @@ metadata:
   labels:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
-    app.kubernetes.io/version: '1.7.0'
+    app.kubernetes.io/version: '1.7.1'
   name: beats.beat.k8s.elastic.co
 spec:
   group: beat.k8s.elastic.co
@@ -1381,7 +1381,7 @@ metadata:
   labels:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
-    app.kubernetes.io/version: '1.7.0'
+    app.kubernetes.io/version: '1.7.1'
   name: elasticmapsservers.maps.k8s.elastic.co
 spec:
   group: maps.k8s.elastic.co
@@ -1705,7 +1705,7 @@ metadata:
   labels:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
-    app.kubernetes.io/version: '1.7.0'
+    app.kubernetes.io/version: '1.7.1'
   name: elasticsearches.elasticsearch.k8s.elastic.co
 spec:
   group: elasticsearch.k8s.elastic.co
@@ -2202,7 +2202,6 @@ spec:
                               type: object
                           type: object
                         type: array
-                        x-kubernetes-preserve-unknown-fields: true
                     required:
                       - name
                     type: object
@@ -3145,7 +3144,7 @@ metadata:
   labels:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
-    app.kubernetes.io/version: '1.7.0'
+    app.kubernetes.io/version: '1.7.1'
   name: enterprisesearches.enterprisesearch.k8s.elastic.co
 spec:
   group: enterprisesearch.k8s.elastic.co
@@ -3759,7 +3758,7 @@ metadata:
   labels:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
-    app.kubernetes.io/version: '1.7.0'
+    app.kubernetes.io/version: '1.7.1'
   name: kibanas.kibana.k8s.elastic.co
 spec:
   group: kibana.k8s.elastic.co
