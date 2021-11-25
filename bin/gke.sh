@@ -11,7 +11,7 @@ default_pool=default-pool
 nodes_per_zone=5 # per zone
 machine_type=n2-standard-8
 release_channel=None # None -> static, e.g. rapid, regular, stable
-gke_version=1.21.5-gke.1802
+gke_version=1.21.6-gke.1500
 eck_version=1.8.0
 __usage() {
     echo "Usage: ./bin/gke.sh {create|(delete,del,d)|scale|fix}"
@@ -61,11 +61,11 @@ __create() {
 
     # Install ECK
     [ -f $pwd/conf/crds.yaml ] || \
-        curl https://download.elastic.co/downloads/eck/$eck_version/crds.yaml --output $pwd/conf/crds.yaml 
+        curl https://download.elastic.co/downloads/eck/$eck_version/crds.yaml --output $pwd/conf/crds.yaml
     kubectl create -f $pwd/conf/crds.yaml
-    
+
     [ -f $pwd/conf/operator.yaml ] || \
-        curl https://download.elastic.co/downloads/eck/$eck_version/operator.yaml --output $pwd/conf/operator.yaml 
+        curl https://download.elastic.co/downloads/eck/$eck_version/operator.yaml --output $pwd/conf/operator.yaml
     kubectl apply -f $pwd/conf/operator.yaml
 
     # create storage class
