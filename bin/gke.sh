@@ -48,6 +48,11 @@ __create() {
         --max-unavailable-upgrade 0 \
         --enable-autorepair
 
+    __init
+}
+
+# setup the deployment enviroment for Elastic Stack
+__init() {
     # Set kubectl to target the created cluster
     gcloud container clusters get-credentials $cluster_name \
         --region ${region} \
@@ -138,6 +143,9 @@ __main() {
         case $1 in
             create|c)
                 __create
+                ;;
+            init|i)
+                __init
                 ;;
             delete|del|d)
                 __delete
