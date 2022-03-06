@@ -11,8 +11,8 @@ default_pool=default-pool
 nodes_per_zone=5 # per zone
 machine_type=n2-standard-8
 release_channel=None # None -> static, e.g. rapid, regular, stable
-gke_version=1.21.6-gke.1500
-eck_version=1.8.0
+gke_version=1.22.6-gke.1000
+eck_version=2.0.0
 __usage() {
     echo "Usage: ./bin/gke.sh {create|(delete,del,d)|scale|fix}"
 }
