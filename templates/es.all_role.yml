@@ -3,7 +3,7 @@ kind: Elasticsearch
 metadata:
     name: dingo
 spec:
-    version: 8.1.3
+    version: 8.2.1
     #http:
         #service:
             #spec:
@@ -14,16 +14,13 @@ spec:
     - name: zone-a
       count: 2
       config:
-          node.master: true
-          node.data: true
-          node.ingest: true
-          node.ml: true
+          node.roles: [ master, data, ingest, ml, remote_cluster_client, transform ]
           xpack.ml.enabled: true
           node.store.allow_mmap: true
           index.store.type: hybridfs
           cluster.routing.allocation.awareness.attributes: zone
           node.attr.zone: asia-east1-a
-          cluster.remote.connect: true
+          #node.remote_cluster_client: true
           xpack.security.authc.anonymous.roles: monitoring_user
       volumeClaimTemplates:
       - metadata:
@@ -104,16 +101,13 @@ spec:
     - name: zone-b
       count: 2
       config:
-          node.master: true
-          node.data: true
-          node.ingest: true
-          node.ml: true
+          node.roles: [ master, data, ingest, ml, remote_cluster_client, transform ]
           xpack.ml.enabled: true
           node.store.allow_mmap: true
           index.store.type: hybridfs
           cluster.routing.allocation.awareness.attributes: zone
           node.attr.zone: asia-east1-b
-          cluster.remote.connect: true
+          #node.remote_cluster_client: true
           xpack.security.authc.anonymous.roles: monitoring_user
       volumeClaimTemplates:
       - metadata:

@@ -14,6 +14,10 @@ __init_gcp_credentials() {
     # FIXME: you may want a minimum privilege service account here just for GCS
     [ -f $pwd/conf/gcs.client.default.credentials_file ] || \
         cp $GOOGLE_APPLICATION_CREDENTIALS $pwd/conf/gcs.client.default.credentials_file
+
+    # Optional: setup a GCP service account that can manipulate GCS for snapshots
+    kubectl create secret generic gcs-credentials \
+        --from-file=$pwd/conf/gcs.client.default.credentials_file
 }
 
 __deploy() {

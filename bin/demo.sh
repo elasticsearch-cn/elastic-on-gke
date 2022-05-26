@@ -3,28 +3,26 @@
 # Author: Bin Wu <binwu@google.com>
 
 pwd=`pwd`
-cluster_name=elk
+cluster_name=elk-demo
 region=asia-east1
 # zone=asia-east1-a
 project_id=du-hast-mich
 default_pool=default-pool
-nodes_per_zone=6 # per zone
-machine_type=n2-standard-8
+nodes_per_zone=5 # per zone
+machine_type=e2-standard-2
 release_channel=None # None -> static, e.g. rapid, regular, stable
 gke_version=1.23.6-gke.1500
 eck_version=2.2.0
-__usage() {
-    echo "Usage: ./bin/gke.sh {create|(delete,del,d)|scale|fix}"
-}
+es_cluster_name=dingo-demo
 
-__create() {
+__create_gke() {
         #--zone "${zone}" \
         #--node-locations "${region}-a,${region}-b,${region}-c"
         #--num-nodes "1" for regional/multi-zone cluster, this is the number in each zone
     gcloud beta container \
         --project "${project_id}" clusters create "$cluster_name" \
-        --region "${region}" \
-        --node-locations "${region}-a","${region}-b" \
+        --zone "${region}-a" \
+        --node-locations "${region}-a" \
         --no-enable-basic-auth \
         --enable-dataplane-v2 \
         --release-channel "${release_channel}" \
@@ -32,7 +30,7 @@ __create() {
         --machine-type "$machine_type" \
         --image-type "COS_CONTAINERD" \
         --disk-type "pd-ssd" \
-        --disk-size "32" \
+        --disk-size "20" \
         --metadata disable-legacy-endpoints=true \
         --scopes "https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/logging.write","https://www.googleapis.com/auth/monitoring","https://www.googleapis.com/auth/servicecontrol","https://www.googleapis.com/auth/service.management.readonly","https://www.googleapis.com/auth/trace.append" \
         --num-nodes "$nodes_per_zone" \
@@ -56,7 +54,7 @@ __create() {
 __init() {
     # Set kubectl to target the created cluster
     gcloud container clusters get-credentials $cluster_name \
-        --region ${region} \
+        --zone "${region}-a" \
         --project ${project_id}
 
     # sysctl -w vm.max_map_count=262144 for every GKE node
@@ -88,76 +86,82 @@ __init() {
         #-p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 }
 
-__add_preemptible_pool() {
-    gcloud beta container \
-    --project "${project_id}" node-pools create "preemptible" \
-    --cluster "$cluster_name" \
-    --region "${region}" \
-    --machine-type "n2-standard-2" \
-    --image-type "COS" \
-    --disk-type "pd-ssd" \
-    --disk-size "100" \
-    --metadata disable-legacy-endpoints=true \
-    --scopes "https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/logging.write","https://www.googleapis.com/auth/monitoring","https://www.googleapis.com/auth/servicecontrol","https://www.googleapis.com/auth/service.management.readonly","https://www.googleapis.com/auth/trace.append" \
-    --preemptible \
-    --num-nodes "1" \
-    --enable-autoscaling \
-    --min-nodes "1" \
-    --max-nodes "10" \
-    --enable-autoupgrade \
-    --enable-autorepair
+__init_gcp_credentials() {
+    # FIXME: you may want a minimum privilege service account here just for GCS
+    [ -f $pwd/conf/gcs.client.default.credentials_file ] || \
+        cp $GOOGLE_APPLICATION_CREDENTIALS $pwd/conf/gcs.client.default.credentials_file
+
+    # Optional: setup a GCP service account that can manipulate GCS for snapshots
+    kubectl create secret generic gcs-credentials \
+        --from-file=$pwd/conf/gcs.client.default.credentials_file
 }
 
-__delete() {
+__deploy_elastic() {
+    __init_gcp_credentials
+
+    kubectl apply -f $pwd/templates/es.demo.yml
+    kubectl apply -f $pwd/templates/kbn.demo.yml
+}
+
+__deploy_demo() {
+    __create_gke
+
+    __deploy_elastic
+}
+
+__password() {
+    # kubectl get secret ${es_cluster_name}-es-elastic-user -o=jsonpath='{.data.elastic}' | base64 --decode
+    kubectl get secret ${es_cluster_name}-es-elastic-user -o go-template='{{.data.elastic | base64decode}}'
+}
+
+__password_reset() {
+    kubectl delete secret ${es_cluster_name}-es-elastic-user
+}
+
+__status() {
+    passwd=$(__password)
+    lb_ip=`kubectl get services ${es_cluster_name}-es-http -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`
+
+    #curl -u "elastic:$passwd" -k "https://$lb_ip:9200"
+
+    kbn_ip=`kubectl get service dingo-demo-kbn-kb-http -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`
+    kbn_port=5601
+    kbn_url=https://${kbn_ip}:${kbn_port}
+
+    echo; echo "================================="
+    echo "Access Kibana at: " ${kbn_url}
+    echo "Username: " elastic
+    echo "Password: " ${passwd}
+    echo "================================="; echo
+}
+
+__clean() {
     echo "Y" | gcloud container clusters delete $cluster_name \
-        --region $region
-}
-
-__scale() {
-    # for a regional cluster, --num-nodes is the number for each zone
-    # or you could only specify --zone here
-
-    echo "Y" | gcloud container clusters resize $cluster_name \
-        --project "${project_id}" \
-        --region "${region}" \
-        --node-pool $default_pool \
-        --num-nodes "$1"
-}
-
-__fix() {
-    $pwd/bin/gke_sysctl_vmmaxmapcount.sh fix
-}
-
-__check() {
-    $pwd/bin/gke_sysctl_vmmaxmapcount.sh check
+        --zone "${region}-a"
 }
 
 __main() {
     if [ $# -eq 0 ]
     then
-        __usage
+        __deploy_demo
+        __status
     else
         case $1 in
-            create|c)
-                __create
+            password|pwd|pw|p)
+                __password
                 ;;
-            init|i)
-                __init
+            pwdreset|pwreset)
+                __password_reset
                 ;;
-            delete|del|d)
-                __delete
+            status|s)
+                __status
                 ;;
-            scale|s)
-                __scale $2
-                ;;
-            fix|f)
-                __fix
-                ;;
-            check|chk)
-                __check
+            clean)
+                __clean
                 ;;
             *)
-                __usage
+                __deploy_demo
+                __status
                 ;;
         esac
     fi

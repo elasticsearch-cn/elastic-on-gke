@@ -3,7 +3,7 @@ kind: Elasticsearch
 metadata:
     name: dingo
 spec:
-    version: 8.1.3
+    version: 8.2.1
     #http:
         #service:
             #spec:
@@ -14,16 +14,13 @@ spec:
     - name: zone-a-master
       count: 2
       config:
-          node.master: true
-          node.data: false
-          node.ingest: false
-          node.ml: false
+          node.roles: [ master ]
           xpack.ml.enabled: true
           node.store.allow_mmap: false
           index.store.type: niofs
           cluster.routing.allocation.awareness.attributes: zone
           node.attr.zone: asia-east1-a
-          cluster.remote.connect: false
+          #node.remote_cluster_client: false
           xpack.security.authc.anonymous.roles: monitoring_user
       volumeClaimTemplates:
       - metadata:
@@ -95,16 +92,13 @@ spec:
     - name: zone-a-data
       count: 2
       config:
-          node.master: false
-          node.data: true
-          node.ingest: false
-          node.ml: false
+          node.roles: [ data ]
           xpack.ml.enabled: true
           node.store.allow_mmap: true
           index.store.type: hybridfs
           cluster.routing.allocation.awareness.attributes: zone
           node.attr.zone: asia-east1-a
-          cluster.remote.connect: false
+          #node.remote_cluster_client: false
           xpack.security.authc.anonymous.roles: monitoring_user
       volumeClaimTemplates:
       - metadata:
@@ -184,16 +178,13 @@ spec:
     - name: zone-a-ingest
       count: 1
       config:
-          node.master: false
-          node.data: false
-          node.ingest: true
-          node.ml: false
+          node.roles: [ ingest, remote_cluster_client, transform ]
           xpack.ml.enabled: true
           node.store.allow_mmap: false
           index.store.type: fs
           cluster.routing.allocation.awareness.attributes: zone
           node.attr.zone: asia-east1-a
-          cluster.remote.connect: true
+          #node.remote_cluster_client: true
           xpack.security.authc.anonymous.roles: monitoring_user
       volumeClaimTemplates:
       - metadata:
@@ -273,16 +264,13 @@ spec:
     - name: zone-a-coord
       count: 1
       config:
-          node.master: false
-          node.data: false
-          node.ingest: false
-          node.ml: false
+          node.roles: [ remote_cluster_client, transform ]
           xpack.ml.enabled: true
           node.store.allow_mmap: false
           index.store.type: fs
           cluster.routing.allocation.awareness.attributes: zone
           node.attr.zone: asia-east1-a
-          cluster.remote.connect: true
+          #node.remote_cluster_client: true
           xpack.security.authc.anonymous.roles: monitoring_user
       volumeClaimTemplates:
       - metadata:
@@ -362,16 +350,13 @@ spec:
     - name: zone-b-master
       count: 1
       config:
-          node.master: true
-          node.data: false
-          node.ingest: false
-          node.ml: false
+          node.roles: [ master ]
           xpack.ml.enabled: true
           node.store.allow_mmap: false
           index.store.type: niofs
           cluster.routing.allocation.awareness.attributes: zone
           node.attr.zone: asia-east1-b
-          cluster.remote.connect: false
+          #node.remote_cluster_client: false
           xpack.security.authc.anonymous.roles: monitoring_user
       volumeClaimTemplates:
       - metadata:
@@ -451,16 +436,13 @@ spec:
     - name: zone-b-data
       count: 2
       config:
-          node.master: false
-          node.data: true
-          node.ingest: false
-          node.ml: false
+          node.roles: [ data ]
           xpack.ml.enabled: true
           node.store.allow_mmap: true
           index.store.type: hybridfs
           cluster.routing.allocation.awareness.attributes: zone
           node.attr.zone: asia-east1-b
-          cluster.remote.connect: false
+          #node.remote_cluster_client: false
           xpack.security.authc.anonymous.roles: monitoring_user
       volumeClaimTemplates:
       - metadata:
@@ -540,16 +522,13 @@ spec:
     - name: zone-b-ingest
       count: 1
       config:
-          node.master: false
-          node.data: false
-          node.ingest: true
-          node.ml: false
+          node.roles: [ ingest, remote_cluster_client, transform ]
           xpack.ml.enabled: true
           node.store.allow_mmap: false
           index.store.type: fs
           cluster.routing.allocation.awareness.attributes: zone
           node.attr.zone: asia-east1-b
-          cluster.remote.connect: true
+          #node.remote_cluster_client: true
           xpack.security.authc.anonymous.roles: monitoring_user
       volumeClaimTemplates:
       - metadata:
@@ -629,16 +608,13 @@ spec:
     - name: zone-b-coord
       count: 1
       config:
-          node.master: false
-          node.data: false
-          node.ingest: false
-          node.ml: false
+          node.roles: [ remote_cluster_client, transform ]
           xpack.ml.enabled: true
           node.store.allow_mmap: false
           index.store.type: fs
           cluster.routing.allocation.awareness.attributes: zone
           node.attr.zone: asia-east1-b
-          cluster.remote.connect: true
+          #node.remote_cluster_client: true
           xpack.security.authc.anonymous.roles: monitoring_user
       volumeClaimTemplates:
       - metadata:
@@ -718,14 +694,11 @@ spec:
     - name: dingo-ml
       count: 1
       config:
-          node.master: false
-          node.data: false
-          node.ingest: false
-          node.ml: true
+          node.roles: [ ml ]
           xpack.ml.enabled: true
           node.store.allow_mmap: false
           index.store.type: fs
-          cluster.remote.connect: false
+          #node.remote_cluster_client: false
           xpack.security.authc.anonymous.roles: monitoring_user
       volumeClaimTemplates:
       - metadata:

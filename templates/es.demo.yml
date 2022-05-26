@@ -1,7 +1,7 @@
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
-    name: dingo
+    name: dingo-demo
 spec:
     version: 8.2.1
     #http:
@@ -11,13 +11,15 @@ spec:
     secureSettings:
     - secretName: gcs-credentials
     nodeSets:
-    - name: dingli
-      count: 1
+    - name: zone-a
+      count: 3
       config:
           node.roles: [ master, data, ingest, ml, remote_cluster_client, transform ]
           xpack.ml.enabled: true
           node.store.allow_mmap: true
           index.store.type: hybridfs
+          cluster.routing.allocation.awareness.attributes: zone
+          node.attr.zone: asia-east1-a
           #node.remote_cluster_client: true
           xpack.security.authc.anonymous.roles: monitoring_user
       volumeClaimTemplates:
@@ -28,8 +30,8 @@ spec:
             - ReadWriteOnce
             resources:
                 requests:
-                    storage: 10Gi
-            storageClassName: dingo-pdssd
+                    storage: 256Gi
+            storageClassName: dingo-pdssd-balanced
       podTemplate:
           metadata:
               labels:
@@ -40,14 +42,14 @@ spec:
               - name: elasticsearch
                 resources:
                     requests:
-                        memory: 24Gi
-                        cpu: 6500m
+                        memory: 5Gi
+                        cpu: 1200m
                     limits:
-                        memory: 24Gi
-                        cpu: 6500m
+                        memory: 5Gi
+                        cpu: 1200m
                 env:
                 - name: ES_JAVA_OPTS
-                  value: "-Xms12g -Xmx12g"
+                  value: "-Xms3g -Xmx3g"
                 - name: PRE_STOP_MAX_WAIT_SECONDS
                   value: "20"
                 - name: PRE_STOP_ADDITIONAL_WAIT_SECONDS
@@ -76,3 +78,20 @@ spec:
                 - -c
                 - |
                   bin/elasticsearch-plugin install --batch repository-gcs
+              #- name: install-ik
+              #  command:
+              #  - sh
+              #  - -c
+              #  - |
+              #    bin/elasticsearch-plugin install --batch https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v8.3.1/elasticsearch-analysis-ik-8.3.1.zip
+              nodeSelector:
+                  cloud.google.com/gke-nodepool: default-pool
+              affinity:
+                  podAntiAffinity:
+                      preferredDuringSchedulingIgnoredDuringExecution:
+                      - weight: 100
+                        podAffinityTerm:
+                            labelSelector:
+                                matchLabels:
+                                    elasticsearch.k8s.elastic.co/cluster-name: dingo-demo
+                            topologyKey: kubernetes.io/hostname

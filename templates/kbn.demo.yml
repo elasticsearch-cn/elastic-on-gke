@@ -1,19 +1,19 @@
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
-    name: dingo-kbn 
+    name: dingo-demo-kbn 
 spec:
     version: 8.2.1
     count: 1
-    #http:
-        #service:
-            #spec:
-                #type: LoadBalancer
+    http:
+        service:
+            spec:
+                type: LoadBalancer
     config:
         elasticsearch.requestHeadersWhitelist:
         - authorization
     elasticsearchRef:
-        name: dingo
+        name: dingo-demo
         # namespace: default
     podTemplate:
         metadata:
@@ -24,11 +24,11 @@ spec:
             - name: kibana
               resources:
                   requests:
-                      memory: 4Gi
-                      cpu: 1400m
+                      memory: 5Gi
+                      cpu: 1200m
                   limits:
-                      memory: 4Gi
-                      cpu: 1400m
+                      memory: 5Gi
+                      cpu: 1200m
               readinessProbe:
                   exec:
                       command:
