@@ -4,10 +4,10 @@ metadata:
     name: dingo-demo
 spec:
     version: 8.2.1
-    #http:
-        #service:
-            #spec:
-                #type: LoadBalancer
+    http:
+        service:
+            spec:
+                type: LoadBalancer
     secureSettings:
     - secretName: gcs-credentials
     nodeSets:

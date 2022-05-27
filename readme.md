@@ -18,7 +18,54 @@ Now we are good to go!
 
 ---
 
-## Quickstart 快速开始
+## Quickstart 快速开始（一键启动，用于测试、演示、PoC）
+
+By default, the GKE resources will be launched in `asia-east1`, a.k.a [Taiwan](https://github.com/elasticsearch-cn/elastic-on-gke/blob/develop/bin/demo.sh#L7), region as a zonal cluster in zone-a to minimize your demo/PoC costs. Feel free to change & [choose one](https://cloud.google.com/compute/docs/regions-zones) close to you.
+
+After that you are all set.
+
+`./bin/demo.sh` will setup everything for you. Once completed, you should seen something similar to the following output
+
+```
+=================================
+
+Elasticsearch status: 
+{
+  "name" : "dingo-demo-es-zone-a-1",
+  "cluster_name" : "dingo-demo",
+  "cluster_uuid" : "9y_DYwNCRWezAEbKp3ko3g",
+  "version" : {
+    "number" : "8.2.1",
+    "build_flavor" : "default",
+    "build_type" : "docker",
+    "build_hash" : "db223507a0bd08f8e84a93e329764cc39b0043b9",
+    "build_date" : "2022-05-19T16:34:08.043347449Z",
+    "build_snapshot" : false,
+    "lucene_version" : "9.1.0",
+    "minimum_wire_compatibility_version" : "7.17.0",
+    "minimum_index_compatibility_version" : "7.0.0"
+  },
+  "tagline" : "You Know, for Search"
+}
+
+---------------------------------
+
+Kibana:  https://34.83.123.100:5601
+Elasticsearch:  https://34.91.123.200:9200
+Username:  elastic
+Password:  cI805x9s21Rg83cm46hRlUhV
+=================================
+```
+
+and you could always retrieve above information by running `./bin/demo.sh status`
+
+### clean up
+
+To tidy things up and release all the created cloud resources, simply run `./bin/demo.sh clean` 
+
+---
+
+## Get Started 详细文档
 
 Check the [Advanced topics](https://github.com/elasticsearch-cn/elastic-on-gke#advanced-topics) if you would like to:
 
@@ -27,7 +74,14 @@ Check the [Advanced topics](https://github.com/elasticsearch-cn/elastic-on-gke#a
 - k8s/GKE & Elasticsearch node sizing
 - Use your own meaningful names for workloads/services/ingress etc.
 
-### Preparations
+Alternatives to start the deployment
+
+- [All-in-one scripts](https://github.com/elasticsearch-cn/elastic-on-gke/blob/develop/aio.md)
+- [terraform](https://github.com/elasticsearch-cn/elastic-on-gke/tree/develop/terraform)
+
+OK, let's get down to the business.
+
+### Preparations 准备工作
 
 #### Setup your `project_id` & targeting region to deploy
 
@@ -42,7 +96,7 @@ For targeting region, you will need to update two files
 
 Change the `region` variable on your choice, `asia-east1` by default.
 
-#### Choose a predefined Elasticsearch deployment
+#### Choose a predefined Elasticsearch deployment 选择一个预置的集群架构
 
 You can later adjust all these settings to archieve your own goal. We will discuss more in [Advanced topics](https://github.com/elasticsearch-cn/elastic-on-gke#advanced-topics).
 
@@ -84,58 +138,7 @@ By now, in your *working directory*, you should be able to run `cat ./conf/gcs.c
 
 ---
 
-## All in one (aio) scripts, thanks the contribution from Papaya
-
-感谢来自木瓜移动小伙伴的贡献。这个部分会让整个部署过程的控制脚本和配置都集中在2个核心文件，极大的简化了整个流程，也让第一次使用的小伙伴更容易上手。
-
-### 配置文件
-
-`cp conf/example-configure.ini conf/configure.ini`
-
-根据项目需求修改配置文件 `conf/configure.ini`
-
-### 部署
-
-```sh
-./bin/deploy.sh -h 查看帮助
-
-```
-#### 创建gke集群
-
-`./bin/deploy.sh -m gke -a create`
-
-#### 生成k8s配置
-
-`./bin/deploy.sh -m temp -a debug`
-#### 部署es
-
-`./bin/deploy.sh -m es -a deploy`
-
-#### 部署kibana
-
-`./bin/deploy.sh -m kbn -a deploy`
-
-#### 部署lb
-
-*申请lb静态IP*
-
-`./bin/deploy.sh -m glb -a reserve`
-
-*配置dns*
-
-`./bin/deploy.sh -m glb -a dns`
-
-*申请ssl证书*
-
-`./bin/deploy.sh -m glb -a cert`
-
-*部署lb*
-
-`./bin/deploy.sh -m glb -a deploy`
-
----
-
-### Launch GKE/k8s cluster
+### Launch GKE/k8s cluster 部署 GKE/k8s 资源池
 
 Run `./bin/gke.sh create`
 

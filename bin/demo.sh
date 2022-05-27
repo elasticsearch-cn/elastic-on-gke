@@ -122,14 +122,18 @@ __status() {
     passwd=$(__password)
     lb_ip=`kubectl get services ${es_cluster_name}-es-http -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`
 
-    #curl -u "elastic:$passwd" -k "https://$lb_ip:9200"
-
     kbn_ip=`kubectl get service dingo-demo-kbn-kb-http -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`
     kbn_port=5601
     kbn_url=https://${kbn_ip}:${kbn_port}
 
-    echo; echo "================================="
-    echo "Access Kibana at: " ${kbn_url}
+    echo; echo "================================="; echo
+    echo "Elasticsearch status: "
+    curl -u "elastic:$passwd" -k "https://$lb_ip:9200"
+
+    echo; echo "---------------------------------"; echo
+
+    echo "Kibana: " ${kbn_url}
+    echo "Elasticsearch: " "https://$lb_ip:9200"
     echo "Username: " elastic
     echo "Password: " ${passwd}
     echo "================================="; echo
