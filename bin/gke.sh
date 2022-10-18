@@ -11,7 +11,7 @@ default_pool=default-pool
 nodes_per_zone=6 # per zone
 machine_type=n2-standard-8
 release_channel=None # None -> static, e.g. rapid, regular, stable
-gke_version=1.24.3-gke.2100
+gke_version=1.24.5-gke.600
 eck_version=2.4.0
 __usage() {
     echo "Usage: ./bin/gke.sh {create|(delete,del,d)|scale|fix}"
@@ -37,13 +37,14 @@ __create() {
         --scopes "https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/logging.write","https://www.googleapis.com/auth/monitoring","https://www.googleapis.com/auth/servicecontrol","https://www.googleapis.com/auth/service.management.readonly","https://www.googleapis.com/auth/trace.append" \
         --num-nodes "$nodes_per_zone" \
         --logging=SYSTEM,WORKLOAD \
-        --monitoring=SYSTEM,WORKLOAD \
+        --monitoring=SYSTEM \
+        --enable-managed-prometheus \
         --enable-ip-alias \
         --network "projects/${project_id}/global/networks/default" \
         --subnetwork "projects/${project_id}/regions/$region/subnetworks/default" \
         --default-max-pods-per-node "110" \
         --no-enable-master-authorized-networks \
-        --addons HorizontalPodAutoscaling,HttpLoadBalancing \
+        --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver \
         --no-enable-autoupgrade \
         --max-surge-upgrade 1 \
         --max-unavailable-upgrade 0 \

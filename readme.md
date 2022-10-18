@@ -59,6 +59,8 @@ Password:  cI805x9s21Rg83cm46hRlUhV
 
 and you could always retrieve above information by running `./bin/demo.sh status`
 
+如果最后的outpu里没有正确输出连接信息，可以等待几分钟时间再次尝试手动查询集群链接状态 `./bin/demo.sh status`
+
 ### clean up
 
 To tidy things up and release all the created cloud resources, simply run `./bin/demo.sh clean` 
