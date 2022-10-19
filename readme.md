@@ -29,19 +29,19 @@ After that you are all set.
 ```
 =================================
 
-Elasticsearch status: 
+Elasticsearch status:
 {
   "name" : "dingo-demo-es-zone-a-1",
   "cluster_name" : "dingo-demo",
-  "cluster_uuid" : "9y_DYwNCRWezAEbKp3ko3g",
+  "cluster_uuid" : "j8RlyvPEQNCoZcZi0yg8sQ",
   "version" : {
-    "number" : "8.2.1",
+    "number" : "8.4.3",
     "build_flavor" : "default",
     "build_type" : "docker",
-    "build_hash" : "db223507a0bd08f8e84a93e329764cc39b0043b9",
-    "build_date" : "2022-05-19T16:34:08.043347449Z",
+    "build_hash" : "42f05b9372a9a4a470db3b52817899b99a76ee73",
+    "build_date" : "2022-10-04T07:17:24.662462378Z",
     "build_snapshot" : false,
-    "lucene_version" : "9.1.0",
+    "lucene_version" : "9.3.0",
     "minimum_wire_compatibility_version" : "7.17.0",
     "minimum_index_compatibility_version" : "7.0.0"
   },
@@ -50,10 +50,10 @@ Elasticsearch status:
 
 ---------------------------------
 
-Kibana:  https://34.83.123.100:5601
-Elasticsearch:  https://34.91.123.200:9200
+Kibana:  https://34.81.97.125:5601
+Elasticsearch:  https://34.81.86.175:9200
 Username:  elastic
-Password:  cI805x9s21Rg83cm46hRlUhV
+Password:  Sc1JLJ203L2Q7Vvi9XYou802
 =================================
 ```
 
