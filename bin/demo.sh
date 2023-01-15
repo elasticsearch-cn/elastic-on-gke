@@ -3,7 +3,7 @@
 # Author: Bin Wu <binwu@google.com>
 
 pwd=`pwd`
-cluster_name=elk-demo
+cluster_name=elastic-demo
 region=asia-east1
 # zone=asia-east1-a
 project_id=du-hast-mich
@@ -11,8 +11,8 @@ default_pool=default-pool
 nodes_per_zone=5 # per zone
 machine_type=e2-standard-2
 release_channel=None # None -> static, e.g. rapid, regular, stable
-gke_version=1.24.5-gke.600
-eck_version=2.4.0
+gke_version=1.25.5-gke.1500
+eck_version=2.6.1
 es_cluster_name=dingo-demo
 
 __create_gke() {
