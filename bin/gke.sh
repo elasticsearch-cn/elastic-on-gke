@@ -6,13 +6,13 @@ pwd=`pwd`
 cluster_name=elk
 region=asia-east1
 # zone=asia-east1-a
-project_id=du-hast-mich
+project_id=`gcloud config get-value project`
 default_pool=default-pool
 nodes_per_zone=6 # per zone
 machine_type=n2-standard-8
 release_channel=None # None -> static, e.g. rapid, regular, stable
-gke_version=1.25.5-gke.1500
-eck_version=2.6.1
+gke_version=1.25.7-gke.1000
+eck_version=2.7.0
 __usage() {
     echo "Usage: ./bin/gke.sh {create|(delete,del,d)|scale|fix}"
 }

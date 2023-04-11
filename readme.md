@@ -35,13 +35,13 @@ Elasticsearch status:
   "cluster_name" : "dingo-demo",
   "cluster_uuid" : "j8RlyvPEQNCoZcZi0yg8sQ",
   "version" : {
-    "number" : "8.4.3",
+    "number" : "8.6.2",
     "build_flavor" : "default",
     "build_type" : "docker",
-    "build_hash" : "42f05b9372a9a4a470db3b52817899b99a76ee73",
-    "build_date" : "2022-10-04T07:17:24.662462378Z",
+    "build_hash" : "2d58d0f136141f03239816a4e360a8d17b6d8f29",
+    "build_date" : "2023-02-13T09:35:20.314882762Z",
     "build_snapshot" : false,
-    "lucene_version" : "9.3.0",
+    "lucene_version" : "9.4.2",
     "minimum_wire_compatibility_version" : "7.17.0",
     "minimum_index_compatibility_version" : "7.0.0"
   },
@@ -50,8 +50,8 @@ Elasticsearch status:
 
 ---------------------------------
 
-Kibana:  https://34.81.97.125:5601
-Elasticsearch:  https://34.81.86.175:9200
+Kibana:  https://35.201.182.178:5601
+Elasticsearch:  https://35.234.3.182:9200
 Username:  elastic
 Password:  Sc1JLJ203L2Q7Vvi9XYou802
 =================================
@@ -351,7 +351,7 @@ kind: Kibana
 metadata:
   name: kbn
   spec:
-    version: 7.15.2
+    version: 8.6.2
     count: 1
     config:
       elasticsearch.hosts:
@@ -369,7 +369,7 @@ kind: Kibana
 metadata:
   name: kbn
 spec:
-  version: 7.15.2
+  version: 8.6.2
   count: 1
   config:
     elasticsearch.hosts:
