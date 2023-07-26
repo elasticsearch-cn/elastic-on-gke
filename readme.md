@@ -33,15 +33,15 @@ Elasticsearch status:
 {
   "name" : "dingo-demo-es-zone-a-1",
   "cluster_name" : "dingo-demo",
-  "cluster_uuid" : "j8RlyvPEQNCoZcZi0yg8sQ",
+  "cluster_uuid" : "J5EwSC4xSbmIqMILkbgMMg",
   "version" : {
-    "number" : "8.6.2",
+    "number" : "8.8.2",
     "build_flavor" : "default",
     "build_type" : "docker",
-    "build_hash" : "2d58d0f136141f03239816a4e360a8d17b6d8f29",
-    "build_date" : "2023-02-13T09:35:20.314882762Z",
+    "build_hash" : "98e1271edf932a480e4262a471281f1ee295ce6b",
+    "build_date" : "2023-06-26T05:16:16.196344851Z",
     "build_snapshot" : false,
-    "lucene_version" : "9.4.2",
+    "lucene_version" : "9.6.0",
     "minimum_wire_compatibility_version" : "7.17.0",
     "minimum_index_compatibility_version" : "7.0.0"
   },
