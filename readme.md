@@ -33,15 +33,15 @@ Elasticsearch status:
 {
   "name" : "dingo-demo-es-zone-a-1",
   "cluster_name" : "dingo-demo",
-  "cluster_uuid" : "j8RlyvPEQNCoZcZi0yg8sQ",
+  "cluster_uuid" : "ouod-dk1R8-o_Et1LhJ19g",
   "version" : {
-    "number" : "8.6.2",
+    "number" : "8.10.3",
     "build_flavor" : "default",
     "build_type" : "docker",
-    "build_hash" : "2d58d0f136141f03239816a4e360a8d17b6d8f29",
-    "build_date" : "2023-02-13T09:35:20.314882762Z",
+    "build_hash" : "c63272efed16b5a1c25f3ce500715b7fddf9a9fb",
+    "build_date" : "2023-10-05T10:15:55.152563867Z",
     "build_snapshot" : false,
-    "lucene_version" : "9.4.2",
+    "lucene_version" : "9.7.0",
     "minimum_wire_compatibility_version" : "7.17.0",
     "minimum_index_compatibility_version" : "7.0.0"
   },
@@ -53,7 +53,7 @@ Elasticsearch status:
 Kibana:  https://35.201.182.178:5601
 Elasticsearch:  https://35.234.3.182:9200
 Username:  elastic
-Password:  Sc1JLJ203L2Q7Vvi9XYou802
+Password:  password
 =================================
 ```
 
