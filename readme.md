@@ -42,6 +42,7 @@ Elasticsearch status:
     "build_date" : "2023-10-05T10:15:55.152563867Z",
     "build_snapshot" : false,
     "lucene_version" : "9.7.0",
+
     "minimum_wire_compatibility_version" : "7.17.0",
     "minimum_index_compatibility_version" : "7.0.0"
   },
