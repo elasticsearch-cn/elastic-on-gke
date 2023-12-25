@@ -14,7 +14,7 @@ metadata:
   namespace: elastic-system
   labels:
     control-plane: elastic-operator
-    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/version: "2.10.0"
 ---
 # Source: eck-operator/templates/webhook.yaml
 apiVersion: v1
@@ -24,7 +24,7 @@ metadata:
   namespace: elastic-system
   labels:
     control-plane: elastic-operator
-    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/version: "2.10.0"
 ---
 # Source: eck-operator/templates/configmap.yaml
 apiVersion: v1
@@ -34,7 +34,7 @@ metadata:
   namespace: elastic-system
   labels:
     control-plane: elastic-operator
-    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/version: "2.10.0"
 data:
   eck.yaml: |-
     log-verbosity: 0
@@ -45,6 +45,7 @@ data:
     ca-cert-rotate-before: 24h
     cert-validity: 8760h
     cert-rotate-before: 24h
+    disable-config-watch: false
     exposed-node-labels: [topology.kubernetes.io/.*,failure-domain.beta.kubernetes.io/.*]
     set-default-security-context: auto-detect
     kube-client-timeout: 60s
@@ -55,8 +56,10 @@ data:
     enable-webhook: true
     webhook-name: elastic-webhook.k8s.elastic.co
     webhook-port: 9443
+    operator-namespace: elastic-system
     enable-leader-election: true
     elasticsearch-observation-interval: 10s
+    ubi-only: false
 ---
 # Source: eck-operator/templates/cluster-roles.yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -65,7 +68,7 @@ metadata:
   name: elastic-operator
   labels:
     control-plane: elastic-operator
-    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/version: "2.10.0"
 rules:
 - apiGroups:
   - "authorization.k8s.io"
@@ -309,7 +312,7 @@ metadata:
     rbac.authorization.k8s.io/aggregate-to-edit: "true"
     rbac.authorization.k8s.io/aggregate-to-admin: "true"
     control-plane: elastic-operator
-    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/version: "2.10.0"
 rules:
 - apiGroups: ["elasticsearch.k8s.elastic.co"]
   resources: ["elasticsearches"]
@@ -351,7 +354,7 @@ metadata:
     rbac.authorization.k8s.io/aggregate-to-edit: "true"
     rbac.authorization.k8s.io/aggregate-to-admin: "true"
     control-plane: elastic-operator
-    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/version: "2.10.0"
 rules:
 - apiGroups: ["elasticsearch.k8s.elastic.co"]
   resources: ["elasticsearches"]
@@ -391,7 +394,7 @@ metadata:
   name: elastic-operator
   labels:
     control-plane: elastic-operator
-    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/version: "2.10.0"
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -409,7 +412,7 @@ metadata:
   namespace: elastic-system
   labels:
     control-plane: elastic-operator
-    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/version: "2.10.0"
 spec:
   ports:
   - name: https
@@ -426,7 +429,7 @@ metadata:
   namespace: elastic-system
   labels:
     control-plane: elastic-operator
-    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/version: "2.10.0"
 spec:
   selector:
     matchLabels:
@@ -439,7 +442,7 @@ spec:
         # Rename the fields "error" to "error.message" and "source" to "event.source"
         # This is to avoid a conflict with the ECS "error" and "source" documents.
         "co.elastic.logs/raw": "[{\"type\":\"container\",\"json.keys_under_root\":true,\"paths\":[\"/var/log/containers/*${data.kubernetes.container.id}.log\"],\"processors\":[{\"convert\":{\"mode\":\"rename\",\"ignore_missing\":true,\"fields\":[{\"from\":\"error\",\"to\":\"_error\"}]}},{\"convert\":{\"mode\":\"rename\",\"ignore_missing\":true,\"fields\":[{\"from\":\"_error\",\"to\":\"error.message\"}]}},{\"convert\":{\"mode\":\"rename\",\"ignore_missing\":true,\"fields\":[{\"from\":\"source\",\"to\":\"_source\"}]}},{\"convert\":{\"mode\":\"rename\",\"ignore_missing\":true,\"fields\":[{\"from\":\"_source\",\"to\":\"event.source\"}]}}]}]"
-        "checksum/config": 90e420c91a6a08851abad958cd4fa4e26788e4bc86c633f9459fdc92b7b2be7f
+        "checksum/config": 6cebba0f4c50f773d0b3c7c11dec9734a9e66da1dbd3f07510302bb9da864c26
       labels:
         control-plane: elastic-operator
     spec:
@@ -448,7 +451,7 @@ spec:
       securityContext:
         runAsNonRoot: true
       containers:
-      - image: "docker.elastic.co/eck/eck-operator:2.9.0"
+      - image: "docker.elastic.co/eck/eck-operator:2.10.0"
         imagePullPolicy: IfNotPresent
         name: manager
         args:
@@ -506,7 +509,7 @@ metadata:
   name: elastic-webhook.k8s.elastic.co
   labels:
     control-plane: elastic-operator
-    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/version: "2.10.0"
 webhooks:
 - clientConfig:
     service:
