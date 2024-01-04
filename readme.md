@@ -35,7 +35,7 @@ Elasticsearch status:
   "cluster_name" : "dingo-demo",
   "cluster_uuid" : "ouod-dk1R8-o_Et1LhJ19g",
   "version" : {
-    "number" : "8.10.3",
+    "number" : "8.11.3",
     "build_flavor" : "default",
     "build_type" : "docker",
     "build_hash" : "c63272efed16b5a1c25f3ce500715b7fddf9a9fb",
@@ -351,7 +351,7 @@ kind: Kibana
 metadata:
   name: kbn
   spec:
-    version: 8.6.2
+    version: 8.11.3
     count: 1
     config:
       elasticsearch.hosts:
@@ -369,7 +369,7 @@ kind: Kibana
 metadata:
   name: kbn
 spec:
-  version: 8.6.2
+  version: 8.11.3
   count: 1
   config:
     elasticsearch.hosts:
