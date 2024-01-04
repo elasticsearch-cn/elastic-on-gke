@@ -65,7 +65,7 @@ metadata:
         cloud.google.com/app-protocols: '{"https":"HTTPS"}'
         #service.alpha.kubernetes.io/app-protocols: '{"https":"HTTPS"}'
         cloud.google.com/neg: '{"ingress": true}'
-        #cloud.google.com/backend-config: '{"ports": {"5601":"dingo-kbn-svc-bc"}}'
+        cloud.google.com/backend-config: '{"ports": {"5601":"dingo-kbn-svc-bc"}}'
 spec:
     type: NodePort
     ports:
