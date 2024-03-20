@@ -11,8 +11,8 @@ default_pool=default-pool
 nodes_per_zone=5 # per zone
 machine_type=e2-standard-2
 release_channel=None # None -> static, e.g. rapid, regular, stable
-gke_version=1.28.4-gke.1083000
-eck_version=2.10.0
+gke_version=1.29.1-gke.1589017
+eck_version=2.11.1
 es_cluster_name=dingo-demo
 
 __create_gke() {
@@ -106,6 +106,9 @@ __deploy_elastic() {
 
 __deploy_demo() {
     __create_gke
+
+    # temp fix for GKE permission issue
+    kubectl apply -f $pwd/conf/elastic-operator-get-configmaps.yaml
 
     __deploy_elastic
 }
