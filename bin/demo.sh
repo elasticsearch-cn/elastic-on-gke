@@ -107,9 +107,6 @@ __deploy_elastic() {
 __deploy_demo() {
     __create_gke
 
-    # temp fix for GKE permission issue
-    kubectl apply -f $pwd/conf/elastic-operator-get-configmaps.yaml
-
     __deploy_elastic
 }
 
