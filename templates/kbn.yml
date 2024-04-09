@@ -3,7 +3,7 @@ kind: Kibana
 metadata:
     name: dingo-kbn 
 spec:
-    version: 8.12.2
+    version: 8.13.2
     count: 1
     #http:
         #service:
