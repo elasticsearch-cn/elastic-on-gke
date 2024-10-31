@@ -35,7 +35,7 @@ Elasticsearch status:
   "cluster_name" : "dingo-demo",
   "cluster_uuid" : "ouod-dk1R8-o_Et1LhJ19g",
   "version" : {
-    "number" : "8.12.2",
+    "number" : "8.15.3",
     "build_flavor" : "default",
     "build_type" : "docker",
     "build_hash" : "48a287ab9497e852de30327444b0809e55d46466",
@@ -96,7 +96,7 @@ For targeting region, you will need to update two files
 - [./bin/gke.sh](https://github.com/bindiego/local_services/blob/develop/k8s/gke/elastic/bin/gke.sh#L7)
 - [Makefile](https://github.com/bindiego/local_services/blob/develop/k8s/gke/elastic/Makefile#L1)
 
-Change the `region` variable on your choice, `asia-east1` by default.
+Change the `region` variable on your choice, `us-central1` by default.
 
 #### Choose a predefined Elasticsearch deployment 选择一个预置的集群架构
 
@@ -351,7 +351,7 @@ kind: Kibana
 metadata:
   name: kbn
   spec:
-    version: 8.11.3
+    version: 8.15.3
     count: 1
     config:
       elasticsearch.hosts:
@@ -369,7 +369,7 @@ kind: Kibana
 metadata:
   name: kbn
 spec:
-  version: 8.11.3
+  version: 8.15.3
   count: 1
   config:
     elasticsearch.hosts:

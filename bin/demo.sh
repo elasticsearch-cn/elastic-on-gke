@@ -4,15 +4,15 @@
 
 pwd=`pwd`
 cluster_name=elastic-demo
-region=asia-east1
-# zone=asia-east1-a
+region=us-central1
+# zone=us-central1-a
 project_id=`gcloud config get-value project`
 default_pool=default-pool
 nodes_per_zone=5 # per zone
 machine_type=e2-standard-2
 release_channel=None # None -> static, e.g. rapid, regular, stable
-gke_version=1.29.6-gke.1038001
-eck_version=2.13.0
+gke_version=1.30.5-gke.1014001
+eck_version=2.14.0
 es_cluster_name=dingo-demo
 
 __create_gke() {
