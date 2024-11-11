@@ -100,14 +100,32 @@ __init_gcp_credentials() {
 __deploy_elastic() {
     __init_gcp_credentials
 
+    echo "Deploying latest Elastic Stack"
+
     kubectl apply -f $pwd/templates/es.demo.yml
     kubectl apply -f $pwd/templates/kbn.demo.yml
 }
 
-__deploy_demo() {
-    __create_gke
+__deploy_elastic_6_8() {
+    __init_gcp_credentials
 
-    __deploy_elastic
+    echo "Deploying Elastic Stack v6.8.23"
+
+    kubectl apply -f $pwd/templates/es.demo.6.8.yml
+    kubectl apply -f $pwd/templates/kbn.demo.6.8.yml
+}
+
+__deploy_demo() {
+    #__create_gke
+    case $1 in
+        6.8)
+            __deploy_elastic_6_8
+            ;;
+        *)
+            __deploy_elastic
+            ;;
+            
+    esac
 }
 
 __password() {
@@ -166,7 +184,7 @@ __main() {
                 __clean
                 ;;
             *)
-                __deploy_demo
+                __deploy_demo $@
                 sleep 120
                 __status
                 ;;

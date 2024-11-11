@@ -19,7 +19,7 @@ spec:
           node.store.allow_mmap: false
           index.store.type: niofs
           cluster.routing.allocation.awareness.attributes: zone
-          node.attr.zone: asia-east1-a
+          node.attr.zone: us-central1-a
           #node.remote_cluster_client: false
           xpack.security.authc.anonymous.roles: monitoring_user
       volumeClaimTemplates:
@@ -88,7 +88,7 @@ spec:
                               - key: failure-domain.beta.kubernetes.io/zone
                                 operator: In
                                 values:
-                                - asia-east1-a
+                                - us-central1-a
     - name: zone-a-data
       count: 2
       config:
@@ -97,7 +97,7 @@ spec:
           node.store.allow_mmap: true
           index.store.type: hybridfs
           cluster.routing.allocation.awareness.attributes: zone
-          node.attr.zone: asia-east1-a
+          node.attr.zone: us-central1-a
           #node.remote_cluster_client: false
           xpack.security.authc.anonymous.roles: monitoring_user
       volumeClaimTemplates:
@@ -174,7 +174,7 @@ spec:
                               - key: failure-domain.beta.kubernetes.io/zone
                                 operator: In
                                 values:
-                                - asia-east1-a
+                                - us-central1-a
     - name: zone-a-ingest
       count: 1
       config:
@@ -183,7 +183,7 @@ spec:
           node.store.allow_mmap: false
           index.store.type: fs
           cluster.routing.allocation.awareness.attributes: zone
-          node.attr.zone: asia-east1-a
+          node.attr.zone: us-central1-a
           #node.remote_cluster_client: true
           xpack.security.authc.anonymous.roles: monitoring_user
       volumeClaimTemplates:
@@ -260,7 +260,7 @@ spec:
                               - key: failure-domain.beta.kubernetes.io/zone
                                 operator: In
                                 values:
-                                - asia-east1-a
+                                - us-central1-a
     - name: zone-a-coord
       count: 1
       config:
@@ -269,7 +269,7 @@ spec:
           node.store.allow_mmap: false
           index.store.type: fs
           cluster.routing.allocation.awareness.attributes: zone
-          node.attr.zone: asia-east1-a
+          node.attr.zone: us-central1-a
           #node.remote_cluster_client: true
           xpack.security.authc.anonymous.roles: monitoring_user
       volumeClaimTemplates:
@@ -346,7 +346,7 @@ spec:
                               - key: failure-domain.beta.kubernetes.io/zone
                                 operator: In
                                 values:
-                                - asia-east1-a
+                                - us-central1-a
     - name: zone-b-master
       count: 1
       config:
@@ -355,7 +355,7 @@ spec:
           node.store.allow_mmap: false
           index.store.type: niofs
           cluster.routing.allocation.awareness.attributes: zone
-          node.attr.zone: asia-east1-b
+          node.attr.zone: us-central1-b
           #node.remote_cluster_client: false
           xpack.security.authc.anonymous.roles: monitoring_user
       volumeClaimTemplates:
@@ -432,7 +432,7 @@ spec:
                               - key: failure-domain.beta.kubernetes.io/zone
                                 operator: In
                                 values:
-                                - asia-east1-b
+                                - us-central1-b
     - name: zone-b-data
       count: 2
       config:
@@ -441,7 +441,7 @@ spec:
           node.store.allow_mmap: true
           index.store.type: hybridfs
           cluster.routing.allocation.awareness.attributes: zone
-          node.attr.zone: asia-east1-b
+          node.attr.zone: us-central1-b
           #node.remote_cluster_client: false
           xpack.security.authc.anonymous.roles: monitoring_user
       volumeClaimTemplates:
@@ -518,7 +518,7 @@ spec:
                               - key: failure-domain.beta.kubernetes.io/zone
                                 operator: In
                                 values:
-                                - asia-east1-b
+                                - us-central1-b
     - name: zone-b-ingest
       count: 1
       config:
@@ -527,7 +527,7 @@ spec:
           node.store.allow_mmap: false
           index.store.type: fs
           cluster.routing.allocation.awareness.attributes: zone
-          node.attr.zone: asia-east1-b
+          node.attr.zone: us-central1-b
           #node.remote_cluster_client: true
           xpack.security.authc.anonymous.roles: monitoring_user
       volumeClaimTemplates:
@@ -604,7 +604,7 @@ spec:
                               - key: failure-domain.beta.kubernetes.io/zone
                                 operator: In
                                 values:
-                                - asia-east1-b
+                                - us-central1-b
     - name: zone-b-coord
       count: 1
       config:
@@ -613,7 +613,7 @@ spec:
           node.store.allow_mmap: false
           index.store.type: fs
           cluster.routing.allocation.awareness.attributes: zone
-          node.attr.zone: asia-east1-b
+          node.attr.zone: us-central1-b
           #node.remote_cluster_client: true
           xpack.security.authc.anonymous.roles: monitoring_user
       volumeClaimTemplates:
@@ -690,7 +690,7 @@ spec:
                               - key: failure-domain.beta.kubernetes.io/zone
                                 operator: In
                                 values:
-                                - asia-east1-b
+                                - us-central1-b
     - name: dingo-ml
       count: 1
       config:

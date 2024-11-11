@@ -1,9 +1,9 @@
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
-    name: dingo-demo
+    name: dingo-demo-6.8
 spec:
-    version: 8.15.3
+    version: 6.8.23
     http:
         service:
             spec:
@@ -14,13 +14,16 @@ spec:
     - name: zone-a
       count: 3
       config:
-          node.roles: [ master, data, ingest, ml, remote_cluster_client, transform ]
+          node.master: true
+          node.data: true
+          node.ingest: true
+          node.ml: true
           xpack.ml.enabled: true
           node.store.allow_mmap: true
           index.store.type: hybridfs
           cluster.routing.allocation.awareness.attributes: zone
           node.attr.zone: us-central1-a
-          #node.remote_cluster_client: true
+          #cluster.remote.connect: true
           xpack.security.authc.anonymous.roles: monitoring_user
       volumeClaimTemplates:
       - metadata:
@@ -30,7 +33,7 @@ spec:
             - ReadWriteOnce
             resources:
                 requests:
-                    storage: 256Gi
+                    storage: 128Gi
             storageClassName: dingo-pdssd-balanced
       podTemplate:
           metadata:
@@ -43,10 +46,10 @@ spec:
                 resources:
                     requests:
                         memory: 4Gi
-                        cpu: 1100m
+                        cpu: 1000m
                     limits:
                         memory: 4Gi
-                        cpu: 1100m
+                        cpu: 1000m
                 env:
                 - name: ES_JAVA_OPTS
                   value: "-Xms2g -Xmx2g"
@@ -78,12 +81,6 @@ spec:
                 - -c
                 - |
                   bin/elasticsearch-plugin install --batch repository-gcs
-              #- name: install-ik
-              #  command:
-              #  - sh
-              #  - -c
-              #  - |
-              #    bin/elasticsearch-plugin install --batch https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v8.3.1/elasticsearch-analysis-ik-8.3.1.zip
               nodeSelector:
                   cloud.google.com/gke-nodepool: default-pool
               affinity:
@@ -93,5 +90,6 @@ spec:
                         podAffinityTerm:
                             labelSelector:
                                 matchLabels:
-                                    elasticsearch.k8s.elastic.co/cluster-name: dingo-demo
+                                    elasticsearch.k8s.elastic.co/cluster-name: dingo
                             topologyKey: kubernetes.io/hostname
+    
