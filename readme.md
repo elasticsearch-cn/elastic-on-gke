@@ -33,17 +33,17 @@ After that you are all set.
 
 Elasticsearch status:
 {
-  "name" : "dingo-demo-es-zone-a-1",
+  "name" : "dingo-demo-es-zone-a-2",
   "cluster_name" : "dingo-demo",
-  "cluster_uuid" : "ouod-dk1R8-o_Et1LhJ19g",
+  "cluster_uuid" : "cnjICb9WRdCNkIhxsMYM8w",
   "version" : {
-    "number" : "8.15.3",
+    "number" : "8.15.5",
     "build_flavor" : "default",
     "build_type" : "docker",
-    "build_hash" : "48a287ab9497e852de30327444b0809e55d46466",
-    "build_date" : "2024-02-19T10:04:32.774273190Z",
+    "build_hash" : "b10896bcfe167cce44a84ba2771d101fb596d40d",
+    "build_date" : "2024-11-21T22:06:13.985834967Z",
     "build_snapshot" : false,
-    "lucene_version" : "9.9.2",
+    "lucene_version" : "9.11.1",
     "minimum_wire_compatibility_version" : "7.17.0",
     "minimum_index_compatibility_version" : "7.0.0"
   },
@@ -353,7 +353,7 @@ kind: Kibana
 metadata:
   name: kbn
   spec:
-    version: 8.15.3
+    version: 8.15.5
     count: 1
     config:
       elasticsearch.hosts:
@@ -371,7 +371,7 @@ kind: Kibana
 metadata:
   name: kbn
 spec:
-  version: 8.15.3
+  version: 8.15.5
   count: 1
   config:
     elasticsearch.hosts:

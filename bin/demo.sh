@@ -78,6 +78,8 @@ __init() {
                 curl https://download.elastic.co/downloads/eck/1.9.1/operator.yaml --output $pwd/conf/operator-1.9.1.yaml
             kubectl create -f $pwd/conf/crds-1.9.1.yaml
             kubectl apply -f $pwd/conf/operator-1.9.1.yaml
+            rm $pwd/conf/crds-1.9.1.yaml
+            rm $pwd/conf/operator-1.9.1.yaml
             ;;
         *)
             [ -f $pwd/conf/crds.yaml ] || \
