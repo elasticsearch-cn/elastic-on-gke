@@ -11,14 +11,19 @@ default_pool=default-pool
 nodes_per_zone=5 # per zone
 machine_type=e2-standard-2
 release_channel=None # None -> static, e.g. rapid, regular, stable
-gke_version=1.30.5-gke.1014001
-eck_version=2.14.0
+gke_version=1.30.5-gke.1699000
+eck_version=2.15.0
 es_cluster_name=dingo-demo
 
 __create_gke() {
-        #--zone "${zone}" \
-        #--node-locations "${region}-a,${region}-b,${region}-c"
-        #--num-nodes "1" for regional/multi-zone cluster, this is the number in each zone
+    if [ "$1" == "6.8" ]
+    then
+        cluster_name=elastic-demo-6
+    fi
+    
+    #--zone "${zone}" \
+    #--node-locations "${region}-a,${region}-b,${region}-c"
+    #--num-nodes "1" for regional/multi-zone cluster, this is the number in each zone
     gcloud beta container \
         --project "${project_id}" clusters create "$cluster_name" \
         --zone "${region}-a" \
@@ -48,7 +53,7 @@ __create_gke() {
         --max-unavailable-upgrade 0 \
         --enable-autorepair
 
-    __init
+    __init $@
 }
 
 # setup the deployment enviroment for Elastic Stack
@@ -65,13 +70,27 @@ __init() {
     kubectl apply -f $pwd/conf/node-daemon.yml
 
     # Install ECK
-    [ -f $pwd/conf/crds.yaml ] || \
-        curl https://download.elastic.co/downloads/eck/$eck_version/crds.yaml --output $pwd/conf/crds.yaml
-    kubectl create -f $pwd/conf/crds.yaml
+    case $1 in
+        6.8)
+            [ -f $pwd/conf/crds-1.9.1.yaml ] || \
+                curl https://download.elastic.co/downloads/eck/1.9.1/crds.yaml --output $pwd/conf/crds-1.9.1.yaml
+            [ -f $pwd/conf/operator-1.9.1.yaml ] || \
+                curl https://download.elastic.co/downloads/eck/1.9.1/operator.yaml --output $pwd/conf/operator-1.9.1.yaml
+            kubectl create -f $pwd/conf/crds-1.9.1.yaml
+            kubectl apply -f $pwd/conf/operator-1.9.1.yaml
+            ;;
+        *)
+            [ -f $pwd/conf/crds.yaml ] || \
+                curl https://download.elastic.co/downloads/eck/$eck_version/crds.yaml --output $pwd/conf/crds.yaml
+            [ -f $pwd/conf/operator.yaml ] || \
+                curl https://download.elastic.co/downloads/eck/$eck_version/operator.yaml --output $pwd/conf/operator.yaml
+            kubectl create -f $pwd/conf/crds.yaml
+            kubectl apply -f $pwd/conf/operator.yaml
+            ;;
+            
+    esac
 
-    [ -f $pwd/conf/operator.yaml ] || \
-        curl https://download.elastic.co/downloads/eck/$eck_version/operator.yaml --output $pwd/conf/operator.yaml
-    kubectl apply -f $pwd/conf/operator.yaml
+    
 
     # create storage class
     kubectl create -f $pwd/conf/storage.yml
@@ -116,7 +135,7 @@ __deploy_elastic_6_8() {
 }
 
 __deploy_demo() {
-    #__create_gke
+    __create_gke $@
     case $1 in
         6.8)
             __deploy_elastic_6_8

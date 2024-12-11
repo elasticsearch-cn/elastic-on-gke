@@ -20,11 +20,13 @@ Now we are good to go!
 
 ## Quickstart 快速开始（一键启动，用于测试、演示、PoC）
 
-By default, the GKE resources will be launched in `asia-east1`, a.k.a [Taiwan](https://github.com/elasticsearch-cn/elastic-on-gke/blob/develop/bin/demo.sh#L7), region as a zonal cluster in zone-a to minimize your demo/PoC costs. Feel free to change & [choose one](https://cloud.google.com/compute/docs/regions-zones) close to you.
+By default, the GKE resources will be launched in `us-central1`, a.k.a [Iowa, USA](https://github.com/elasticsearch-cn/elastic-on-gke/blob/develop/bin/demo.sh#L7), region as a zonal cluster in zone-a to minimize your demo/PoC costs. Feel free to change & [choose one](https://cloud.google.com/compute/docs/regions-zones) close to you.
 
 After that you are all set.
 
 `./bin/demo.sh` will setup everything for you. Once completed, you should seen something similar to the following output
+
+`./bin/demo.sh 6.8` will launch an old `6.8.23` Elastic Stack which is **NOT** fully tested, hence use at your own risk.
 
 ```
 =================================
