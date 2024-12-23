@@ -18,7 +18,7 @@ es_cluster_name=dingo-demo
 __create_gke() {
     if [ "$1" == "6.8" ]
     then
-        cluster_name=elastic-demo-6
+        export cluster_name=elastic-demo-6
     fi
     
     #--zone "${zone}" \
@@ -70,30 +70,13 @@ __init() {
     kubectl apply -f $pwd/conf/node-daemon.yml
 
     # Install ECK
-    case $1 in
-        6.8)
-            [ -f $pwd/conf/crds-1.9.1.yaml ] || \
-                curl https://download.elastic.co/downloads/eck/1.9.1/crds.yaml --output $pwd/conf/crds-1.9.1.yaml
-            [ -f $pwd/conf/operator-1.9.1.yaml ] || \
-                curl https://download.elastic.co/downloads/eck/1.9.1/operator.yaml --output $pwd/conf/operator-1.9.1.yaml
-            kubectl create -f $pwd/conf/crds-1.9.1.yaml
-            kubectl apply -f $pwd/conf/operator-1.9.1.yaml
-            rm $pwd/conf/crds-1.9.1.yaml
-            rm $pwd/conf/operator-1.9.1.yaml
-            ;;
-        *)
-            [ -f $pwd/conf/crds.yaml ] || \
-                curl https://download.elastic.co/downloads/eck/$eck_version/crds.yaml --output $pwd/conf/crds.yaml
-            [ -f $pwd/conf/operator.yaml ] || \
-                curl https://download.elastic.co/downloads/eck/$eck_version/operator.yaml --output $pwd/conf/operator.yaml
-            kubectl create -f $pwd/conf/crds.yaml
-            kubectl apply -f $pwd/conf/operator.yaml
-            ;;
+    [ -f $pwd/conf/crds.yaml ] || \
+        curl https://download.elastic.co/downloads/eck/$eck_version/crds.yaml --output $pwd/conf/crds.yaml
+    [ -f $pwd/conf/operator.yaml ] || \
+        curl https://download.elastic.co/downloads/eck/$eck_version/operator.yaml --output $pwd/conf/operator.yaml
+    kubectl create -f $pwd/conf/crds.yaml
+    kubectl apply -f $pwd/conf/operator.yaml
             
-    esac
-
-    
-
     # create storage class
     kubectl create -f $pwd/conf/storage.yml
 

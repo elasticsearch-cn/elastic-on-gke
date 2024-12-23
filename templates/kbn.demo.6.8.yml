@@ -1,7 +1,7 @@
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
-    name: dingo-demo-kbn-6.8
+    name: dingo-demo-kbn-6
 spec:
     version: 6.8.23
     count: 1
@@ -13,7 +13,7 @@ spec:
         elasticsearch.requestHeadersWhitelist:
         - authorization
     elasticsearchRef:
-        name: dingo
+        name: dingo-demo-6
         # namespace: default
     podTemplate:
         metadata:

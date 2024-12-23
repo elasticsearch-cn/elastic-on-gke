@@ -26,8 +26,6 @@ After that you are all set.
 
 `./bin/demo.sh` will setup everything for you. Once completed, you should seen something similar to the following output
 
-`./bin/demo.sh 6.8` will launch an old `6.8.23` Elastic Stack which is **NOT** fully tested, hence use at your own risk.
-
 ```
 =================================
 
@@ -62,6 +60,27 @@ Password:  password
 and you could always retrieve above information by running `./bin/demo.sh status`
 
 如果最后的output里没有正确输出连接信息，可以等待几分钟时间再次尝试手动查询集群链接状态 `./bin/demo.sh status`
+
+### Quick start for *6.8.23*
+
+`./bin/demo.sh 6.8` will launch an old `6.8.23` Elastic Stack which is the oldest version we suport by now.
+
+Check the status by running the following command
+
+```shell
+passwd=$(kubectl get secret dingo-demo-6-es-elastic-user -o go-template='{{.data.elastic | base64decode}}')
+lb_ip=`kubectl get services dingo-demo-6-es-http -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`
+kbn_ip=`kubectl get service dingo-demo-kbn-6-kb-http -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`
+kbn_url=https://${kbn_ip}:5601
+
+curl -u "elastic:$passwd" -k "https://$lb_ip:9200"
+
+echo "Kibana: " ${kbn_url}
+echo "Elasticsearch: " "https://$lb_ip:9200"
+echo "Username: " elastic
+echo "Password: " ${passwd}
+echo "================================="; echo
+```
 
 ### clean up
 
