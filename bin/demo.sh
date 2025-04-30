@@ -11,8 +11,8 @@ default_pool=default-pool
 nodes_per_zone=5 # per zone
 machine_type=e2-standard-2
 release_channel=None # None -> static, e.g. rapid, regular, stable
-gke_version=1.30.5-gke.1699000
-eck_version=2.15.0
+gke_version=1.32.2-gke.1182003
+eck_version=2.16.1
 es_cluster_name=dingo-demo
 
 __create_gke() {
@@ -20,7 +20,7 @@ __create_gke() {
     then
         export cluster_name=elastic-demo-6
     fi
-    
+
     #--zone "${zone}" \
     #--node-locations "${region}-a,${region}-b,${region}-c"
     #--num-nodes "1" for regional/multi-zone cluster, this is the number in each zone
@@ -76,7 +76,7 @@ __init() {
         curl https://download.elastic.co/downloads/eck/$eck_version/operator.yaml --output $pwd/conf/operator.yaml
     kubectl create -f $pwd/conf/crds.yaml
     kubectl apply -f $pwd/conf/operator.yaml
-            
+
     # create storage class
     kubectl create -f $pwd/conf/storage.yml
 
@@ -128,7 +128,7 @@ __deploy_demo() {
         *)
             __deploy_elastic
             ;;
-            
+
     esac
 }
 

@@ -1,17 +1,17 @@
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
-    name: dingo-kbn 
+    name: dingo-kbn
 spec:
-    version: 8.15.5
+    version: 8.17.5
     count: 1
     #http:
-        #service:
-            #spec:
-                #type: LoadBalancer
+    #service:
+    #spec:
+    #type: LoadBalancer
     config:
         elasticsearch.requestHeadersWhitelist:
-        - authorization
+            - authorization
     elasticsearchRef:
         name: dingo
         # namespace: default
@@ -21,17 +21,17 @@ spec:
                 k8na: "on"
         spec:
             containers:
-            - name: kibana
-              resources:
-                  requests:
-                      memory: 4Gi
-                      cpu: 1400m
-                  limits:
-                      memory: 4Gi
-                      cpu: 1400m
-              readinessProbe:
-                  exec:
-                      command:
-                      - bash
-                      - -c
-                      - curl -o /dev/null -w "%{http_code}" https://127.0.0.1:5601/login -k -s
+                - name: kibana
+                  resources:
+                      requests:
+                          memory: 4Gi
+                          cpu: 1400m
+                      limits:
+                          memory: 4Gi
+                          cpu: 1400m
+                  readinessProbe:
+                      exec:
+                          command:
+                              - bash
+                              - -c
+                              - curl -o /dev/null -w "%{http_code}" https://127.0.0.1:5601/login -k -s
