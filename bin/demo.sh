@@ -11,7 +11,7 @@ default_pool=default-pool
 nodes_per_zone=5 # per zone
 machine_type=e2-standard-2
 release_channel=None # None -> static, e.g. rapid, regular, stable
-gke_version=1.32.2-gke.1182003
+gke_version=1.32.4-gke.1415000
 eck_version=2.16.1
 es_cluster_name=dingo-demo
 

@@ -26,7 +26,7 @@ spec:
             restartPolicy: Always
             containers:
             - name: dingo-node-daemon
-              image: gcr.io/google-containers/startup-script:v1
+              image: gcr.io/google-containers/startup-script:v2
               imagePullPolicy: Always
               securityContext:
                   privileged: true
