@@ -53,7 +53,26 @@ __create_gke() {
         --max-unavailable-upgrade 0 \
         --enable-autorepair
 
+    __init_internal_loadbalancer
     __init $@
+}
+
+__init_internal_loadbalancer() {
+    # GCE internal load balancer requires a
+    # proxy-only subnet in the same region and VPC
+
+    # IMPORTANT: this IPv4 is ONLY for GCP default us-central1, you need to update the range
+    # to match your desired subnet settings
+    # Check if proxy-only subnet already exists, L7 LB only
+    if ! gcloud compute networks subnets describe proxy-only-subnet \
+        --region=$region --network=default >/dev/null 2>&1; then
+        echo "Creating proxy-only subnet for internal load balancer..."
+        gcloud compute networks subnets create proxy-only-subnet \
+            --purpose=REGIONAL_MANAGED_PROXY --role=ACTIVE --region=$region \
+            --network=default --range=10.120.0.0/23
+    else
+        echo "proxy-only-subnet already exists, skipping creation."
+    fi
 }
 
 # setup the deployment enviroment for Elastic Stack
@@ -144,6 +163,7 @@ __password_reset() {
 __status() {
     passwd=$(__password)
     lb_ip=`kubectl get services ${es_cluster_name}-es-http -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`
+    ilb_ip=`kubectl get ingress ${es_cluster_name}-es-ingress -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`
 
     kbn_ip=`kubectl get service dingo-demo-kbn-kb-http -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`
     kbn_port=5601
@@ -152,11 +172,13 @@ __status() {
     echo; echo "================================="; echo
     echo "Elasticsearch status: "
     curl -u "elastic:$passwd" -k "https://$lb_ip:9200"
+    curl -u "elastic:$passwd" "http://$ilb_ip"
 
     echo; echo "---------------------------------"; echo
 
-    echo "Kibana: " ${kbn_url}
-    echo "Elasticsearch: " "https://$lb_ip:9200"
+    echo "Kibana public address: " ${kbn_url}
+    echo "Elasticsearch public address: " "https://$lb_ip:9200"
+    echo "Elasticsearch internal address: " "http://$ilb_ip"
     echo "Username: " elastic
     echo "Password: " ${passwd}
     echo "================================="; echo
