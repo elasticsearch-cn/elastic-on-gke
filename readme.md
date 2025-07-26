@@ -22,6 +22,8 @@ Now we are good to go!
 
 By default, the GKE resources will be launched in `us-central1`, a.k.a [Iowa, USA](https://github.com/elasticsearch-cn/elastic-on-gke/blob/develop/bin/demo.sh#L7), region as a zonal cluster in zone-a to minimize your demo/PoC costs. Feel free to change & [choose one](https://cloud.google.com/compute/docs/regions-zones) close to you.
 
+**IMPORTANT**: It exposes Elasticsearh through Internal Load Balancer by default, change [es.demo.yml](https://github.com/elasticsearch-cn/elastic-on-gke/blob/develop/templates/es.demo.yml#L15-L17) configuration to `LoadBalancer` *and* **remove** `Ingress` & `BackendConfig` settings for public Internet access with https. The Internal LB front end uses http with port 80. It's critical to make sure this [demo.sh](https://github.com/elasticsearch-cn/elastic-on-gke/blob/develop/bin/demo.sh#L72) IPv4 proxy network range for L7 ILB correctly overlapped according to your network configurations.
+
 After that you are all set.
 
 `./bin/demo.sh` will setup everything for you. Once completed, you should seen something similar to the following output
@@ -31,27 +33,27 @@ After that you are all set.
 
 Elasticsearch status:
 {
-  "name" : "dingo-demo-es-zone-a-2",
+  "name" : "dingo-demo-es-zone-a-0",
   "cluster_name" : "dingo-demo",
-  "cluster_uuid" : "cnjICb9WRdCNkIhxsMYM8w",
+  "cluster_uuid" : "YfgFnok7Q6uUjGiAzV-gzg",
   "version" : {
-    "number" : "8.15.5",
+    "number" : "8.18.3",
     "build_flavor" : "default",
     "build_type" : "docker",
-    "build_hash" : "b10896bcfe167cce44a84ba2771d101fb596d40d",
-    "build_date" : "2024-11-21T22:06:13.985834967Z",
+    "build_hash" : "28fc77664903e7de48ba5632e5d8bfeb5e3ed39c",
+    "build_date" : "2025-06-18T22:08:41.171261054Z",
     "build_snapshot" : false,
-    "lucene_version" : "9.11.1",
+    "lucene_version" : "9.12.1",
     "minimum_wire_compatibility_version" : "7.17.0",
     "minimum_index_compatibility_version" : "7.0.0"
   },
   "tagline" : "You Know, for Search"
 }
-
 ---------------------------------
 
-Kibana:  https://35.201.182.178:5601
-Elasticsearch:  https://35.234.3.182:9200
+Kibana public address:  https://35.201.182.178:5601
+Elasticsearch public address:  https://35.234.3.182:9200
+Elasticsearch internal address:  http://10.128.0.13
 Username:  elastic
 Password:  password
 =================================
