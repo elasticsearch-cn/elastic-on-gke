@@ -3,7 +3,7 @@ kind: ApmServer
 metadata:
     name: dingo-apm
 spec:
-    version: 8.18.3
+    version: 8.19.11
     count: 1
     elasticsearchRef:
         name: dingo

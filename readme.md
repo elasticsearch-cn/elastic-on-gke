@@ -37,7 +37,7 @@ Elasticsearch status:
   "cluster_name" : "dingo-demo",
   "cluster_uuid" : "YfgFnok7Q6uUjGiAzV-gzg",
   "version" : {
-    "number" : "8.18.3",
+    "number" : "8.19.11",
     "build_flavor" : "default",
     "build_type" : "docker",
     "build_hash" : "28fc77664903e7de48ba5632e5d8bfeb5e3ed39c",
