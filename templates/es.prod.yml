@@ -84,8 +84,7 @@ spec:
                           requiredDuringSchedulingIgnoredDuringExecution:
                               nodeSelectorTerms:
                                   - matchExpressions:
-                                        # - key: topology.kubernetes.io/zone # v1.18+
-                                        - key: failure-domain.beta.kubernetes.io/zone
+                                        - key: topology.kubernetes.io/zone
                                           operator: In
                                           values:
                                               - us-central1-a
@@ -170,8 +169,7 @@ spec:
                           requiredDuringSchedulingIgnoredDuringExecution:
                               nodeSelectorTerms:
                                   - matchExpressions:
-                                        # - key: topology.kubernetes.io/zone # v1.18+
-                                        - key: failure-domain.beta.kubernetes.io/zone
+                                        - key: topology.kubernetes.io/zone
                                           operator: In
                                           values:
                                               - us-central1-a
@@ -256,8 +254,7 @@ spec:
                           requiredDuringSchedulingIgnoredDuringExecution:
                               nodeSelectorTerms:
                                   - matchExpressions:
-                                        # - key: topology.kubernetes.io/zone # v1.18+
-                                        - key: failure-domain.beta.kubernetes.io/zone
+                                        - key: topology.kubernetes.io/zone
                                           operator: In
                                           values:
                                               - us-central1-a
@@ -342,8 +339,7 @@ spec:
                           requiredDuringSchedulingIgnoredDuringExecution:
                               nodeSelectorTerms:
                                   - matchExpressions:
-                                        # - key: topology.kubernetes.io/zone # v1.18+
-                                        - key: failure-domain.beta.kubernetes.io/zone
+                                        - key: topology.kubernetes.io/zone
                                           operator: In
                                           values:
                                               - us-central1-a
@@ -428,8 +424,7 @@ spec:
                           requiredDuringSchedulingIgnoredDuringExecution:
                               nodeSelectorTerms:
                                   - matchExpressions:
-                                        # - key: topology.kubernetes.io/zone # v1.18+
-                                        - key: failure-domain.beta.kubernetes.io/zone
+                                        - key: topology.kubernetes.io/zone
                                           operator: In
                                           values:
                                               - us-central1-b
@@ -514,8 +509,7 @@ spec:
                           requiredDuringSchedulingIgnoredDuringExecution:
                               nodeSelectorTerms:
                                   - matchExpressions:
-                                        # - key: topology.kubernetes.io/zone # v1.18+
-                                        - key: failure-domain.beta.kubernetes.io/zone
+                                        - key: topology.kubernetes.io/zone
                                           operator: In
                                           values:
                                               - us-central1-b
@@ -600,8 +594,7 @@ spec:
                           requiredDuringSchedulingIgnoredDuringExecution:
                               nodeSelectorTerms:
                                   - matchExpressions:
-                                        # - key: topology.kubernetes.io/zone # v1.18+
-                                        - key: failure-domain.beta.kubernetes.io/zone
+                                        - key: topology.kubernetes.io/zone
                                           operator: In
                                           values:
                                               - us-central1-b
@@ -686,8 +679,7 @@ spec:
                           requiredDuringSchedulingIgnoredDuringExecution:
                               nodeSelectorTerms:
                                   - matchExpressions:
-                                        # - key: topology.kubernetes.io/zone # v1.18+
-                                        - key: failure-domain.beta.kubernetes.io/zone
+                                        - key: topology.kubernetes.io/zone
                                           operator: In
                                           values:
                                               - us-central1-b
