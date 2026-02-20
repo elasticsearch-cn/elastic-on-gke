@@ -1,4 +1,4 @@
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
     name: elasticsearch-sample-snapshotter
@@ -11,17 +11,17 @@ spec:
                 spec:
                     containers:
                     - name: snapshotter
-                      image: centos:7
+                      image: alpine:3
                       volumeMounts:
                       - name: es-basic-auth
                         mountPath: /mnt/elastic/es-basic-auth
                       command:
-                      - /bin/bash
+                      - /bin/sh
                       args:
                       - -c
-                      - 'curl -s -i -k -u "elastic:$(</mnt/elastic/es-basic-auth/elastic)" -XPUT "https://elasticsearch-sample-es-http:9200/_snapshot/my_gcs_repository/%3Csnapshot-%7Bnow%2Fd%7D%3E" | tee /dev/stderr | grep "200 OK"'
+                      - 'apk add --no-cache curl && curl -s -i -k -u "elastic:$(cat /mnt/elastic/es-basic-auth/elastic)" -XPUT "https://elasticsearch-sample-es-http:9200/_snapshot/my_gcs_repository/%3Csnapshot-%7Bnow%2Fd%7D%3E" | tee /dev/stderr | grep "200 OK"'
                     restartPolicy: OnFailure
                     volumes:
                     - name: es-basic-auth
-                    secret:
+                      secret:
                         secretName: elasticsearch-sample-elastic-user
