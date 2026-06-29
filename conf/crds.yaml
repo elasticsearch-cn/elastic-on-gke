@@ -4,12 +4,12 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
     helm.sh/resource-policy: keep
   labels:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
-    app.kubernetes.io/version: '3.3.0'
+    app.kubernetes.io/version: '3.4.1'
   name: agents.agent.k8s.elastic.co
 spec:
   group: agent.k8s.elastic.co
@@ -1099,12 +1099,12 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
     helm.sh/resource-policy: keep
   labels:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
-    app.kubernetes.io/version: '3.3.0'
+    app.kubernetes.io/version: '3.4.1'
   name: apmservers.apm.k8s.elastic.co
 spec:
   group: apm.k8s.elastic.co
@@ -2283,12 +2283,12 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
     helm.sh/resource-policy: keep
   labels:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
-    app.kubernetes.io/version: '3.3.0'
+    app.kubernetes.io/version: '3.4.1'
   name: autoopsagentpolicies.autoops.k8s.elastic.co
 spec:
   group: autoops.k8s.elastic.co
@@ -2305,7 +2305,7 @@ spec:
   versions:
   - additionalPrinterColumns:
     - description: Ready resources
-      jsonPath: .status.ready
+      jsonPath: .status.readyCount
       name: Ready
       type: string
     - jsonPath: .status.phase
@@ -2355,6 +2355,52 @@ spec:
               image:
                 description: Image is the AutoOps Agent Docker image to deploy.
                 type: string
+              namespaceSelector:
+                description: |-
+                  NamespaceSelector is a namespace selector for the resources to be configured.
+                  Any Elasticsearch instances that belong to the selected namespaces will be configured to send data to AutoOps.
+                properties:
+                  matchExpressions:
+                    description: matchExpressions is a list of label selector requirements. The requirements are ANDed.
+                    items:
+                      description: |-
+                        A label selector requirement is a selector that contains values, a key, and an operator that
+                        relates the key and values.
+                      properties:
+                        key:
+                          description: key is the label key that the selector applies to.
+                          type: string
+                        operator:
+                          description: |-
+                            operator represents a key's relationship to a set of values.
+                            Valid operators are In, NotIn, Exists and DoesNotExist.
+                          type: string
+                        values:
+                          description: |-
+                            values is an array of string values. If the operator is In or NotIn,
+                            the values array must be non-empty. If the operator is Exists or DoesNotExist,
+                            the values array must be empty. This array is replaced during a strategic
+                            merge patch.
+                          items:
+                            type: string
+                          type: array
+                          x-kubernetes-list-type: atomic
+                      required:
+                      - key
+                      - operator
+                      type: object
+                    type: array
+                    x-kubernetes-list-type: atomic
+                  matchLabels:
+                    additionalProperties:
+                      type: string
+                    description: |-
+                      matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+                      map is equivalent to an element of matchExpressions, whose key field is "key", the
+                      operator is "In", and the values array contains only "value". The requirements are ANDed.
+                    type: object
+                type: object
+                x-kubernetes-map-type: atomic
               podTemplate:
                 description: PodTemplate provides customisation options (labels, annotations, affinity rules, resource requests, and so on) for the Agent pods
                 type: object
@@ -2424,6 +2470,37 @@ spec:
             type: object
           status:
             properties:
+              details:
+                additionalProperties:
+                  description: |-
+                    AutoOpsResourceStatus represents the status of an individual Elasticsearch resource
+                    monitored by an AutoOpsAgentPolicy. It is used in the Details map of AutoOpsAgentPolicyStatus
+                    to provide lightweight per-resource status information. Only resources that are not in a
+                    ready state are included in the Details map; ready resources, and resources that were skipped by resource selector and namespace selector,
+                    are omitted to reduce status size.
+                  properties:
+                    error:
+                      description: |-
+                        Error contains the error message when the resource is in an error state.
+                        Only populated when Phase is "Error".
+                      type: string
+                    message:
+                      description: |-
+                        Message provides a human-readable explanation of the current phase.
+                        Only populated for non-ready states to provide context about why
+                        the resource is not ready.
+                      type: string
+                    phase:
+                      description: |-
+                        Phase indicates the current state of the monitored resource.
+                        Possible values are "Error" (resource encountered an error) or "Skipped"
+                        (resource was skipped due to RBAC permissions).
+                      type: string
+                  required:
+                  - phase
+                  type: object
+                description: Details contains lightweight per-resource details.
+                type: object
               errors:
                 description: Errors is the number of resources that are in an error state.
                 type: integer
@@ -2437,8 +2514,14 @@ spec:
               ready:
                 description: Ready is the number of resources that are in a ready state.
                 type: integer
+              readyCount:
+                description: ReadyCount is a human readable string of ready monitored resources vs all monitored resources, Ready/Resources.
+                type: string
               resources:
                 description: Resources is the number of resources that match the ResourceSelector.
+                type: integer
+              skipped:
+                description: Skipped is the number of resources that are skipped from monitoring due to rbac permissions.
                 type: integer
             required:
             - errors
@@ -2456,12 +2539,12 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
     helm.sh/resource-policy: keep
   labels:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
-    app.kubernetes.io/version: '3.3.0'
+    app.kubernetes.io/version: '3.4.1'
   name: beats.beat.k8s.elastic.co
 spec:
   group: beat.k8s.elastic.co
@@ -2917,12 +3000,12 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
     helm.sh/resource-policy: keep
   labels:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
-    app.kubernetes.io/version: '3.3.0'
+    app.kubernetes.io/version: '3.4.1'
   name: elasticmapsservers.maps.k8s.elastic.co
 spec:
   group: maps.k8s.elastic.co
@@ -3499,12 +3582,12 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
     helm.sh/resource-policy: keep
   labels:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
-    app.kubernetes.io/version: '3.3.0'
+    app.kubernetes.io/version: '3.4.1'
   name: elasticsearchautoscalers.autoscaling.k8s.elastic.co
 spec:
   group: autoscaling.k8s.elastic.co
@@ -3820,12 +3903,12 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
     helm.sh/resource-policy: keep
   labels:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
-    app.kubernetes.io/version: '3.3.0'
+    app.kubernetes.io/version: '3.4.1'
   name: elasticsearches.elasticsearch.k8s.elastic.co
 spec:
   group: elasticsearch.k8s.elastic.co
@@ -4294,6 +4377,13 @@ spec:
                             description: SecretName is the name of the secret.
                             type: string
                         type: object
+                      client:
+                        description: Client holds client configuration options.
+                        properties:
+                          authentication:
+                            description: Authentication enables client authentication (enterprise-only feature).
+                            type: boolean
+                        type: object
                       selfSignedCertificate:
                         description: SelfSignedCertificate allows configuring the self-signed certificate generated by the operator.
                         properties:
@@ -4669,6 +4759,24 @@ spec:
                             type: object
                         type: object
                       type: array
+                    zoneAwareness:
+                      description: ZoneAwareness enables automatic topology-aware scheduling and shard-awareness configuration.
+                      properties:
+                        topologyKey:
+                          description: |-
+                            TopologyKey is the key of node labels used for zone-aware placement.
+                            Defaults to "topology.kubernetes.io/zone".
+                          type: string
+                        zones:
+                          description: |-
+                            Zones optionally restrict scheduling to the listed topology values.
+                            If empty, Pods can be scheduled in any topology value for the selected topologyKey.
+                          items:
+                            type: string
+                          minItems: 1
+                          type: array
+                          x-kubernetes-list-type: set
+                      type: object
                   required:
                   - name
                   type: object
@@ -6872,12 +6980,12 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
     helm.sh/resource-policy: keep
   labels:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
-    app.kubernetes.io/version: '3.3.0'
+    app.kubernetes.io/version: '3.4.1'
   name: enterprisesearches.enterprisesearch.k8s.elastic.co
 spec:
   group: enterprisesearch.k8s.elastic.co
@@ -8000,12 +8108,12 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
     helm.sh/resource-policy: keep
   labels:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
-    app.kubernetes.io/version: '3.3.0'
+    app.kubernetes.io/version: '3.4.1'
   name: kibanas.kibana.k8s.elastic.co
 spec:
   group: kibana.k8s.elastic.co
@@ -8071,6 +8179,14 @@ spec:
               elasticsearchRef:
                 description: ElasticsearchRef is a reference to an Elasticsearch cluster running in the same Kubernetes cluster.
                 properties:
+                  clientCertificateSecretName:
+                    description: |-
+                      ClientCertificateSecretName is the name of an existing Kubernetes secret containing a client certificate
+                      (tls.crt) and private key (tls.key) for client authentication to the referenced resource.
+                      This field is only relevant when the referenced Elasticsearch cluster has client authentication enabled.
+                      If not specified and the referenced resource requires client authentication, ECK will auto-generate a
+                      client certificate.
+                    type: string
                   name:
                     description: Name of an existing Kubernetes object corresponding to an Elastic resource managed by ECK.
                     type: string
@@ -8629,18 +8745,6 @@ spec:
                     type: string
                   namespace:
                     description: Namespace of the Kubernetes object. If empty, defaults to the current namespace.
-                    type: string
-                  secretName:
-                    description: |-
-                      SecretName is the name of an existing Kubernetes secret that contains connection information for associating an
-                      Elastic resource not managed by the operator.
-                      The referenced secret must contain the following:
-                      - `url`: the URL to reach the Elastic resource
-                      - `username`: the username of the user to be authenticated to the Elastic resource
-                      - `password`: the password of the user to be authenticated to the Elastic resource
-                      - `ca.crt`: the CA certificate in PEM format (optional)
-                      - `api-key`: the key to authenticate against the Elastic resource instead of a username and password (supported only for `elasticsearchRefs` in AgentSpec and in BeatSpec)
-                      This field cannot be used in combination with the other fields name, namespace or serviceName.
                     type: string
                   serviceName:
                     description: |-
@@ -9300,12 +9404,12 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
     helm.sh/resource-policy: keep
   labels:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
-    app.kubernetes.io/version: '3.3.0'
+    app.kubernetes.io/version: '3.4.1'
   name: logstashes.logstash.k8s.elastic.co
 spec:
   group: logstash.k8s.elastic.co
@@ -10430,12 +10534,12 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
     helm.sh/resource-policy: keep
   labels:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
-    app.kubernetes.io/version: '3.3.0'
+    app.kubernetes.io/version: '3.4.1'
   name: packageregistries.packageregistry.k8s.elastic.co
 spec:
   group: packageregistry.k8s.elastic.co
@@ -10976,12 +11080,12 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
     helm.sh/resource-policy: keep
   labels:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
-    app.kubernetes.io/version: '3.3.0'
+    app.kubernetes.io/version: '3.4.1'
   name: stackconfigpolicies.stackconfigpolicy.k8s.elastic.co
 spec:
   group: stackconfigpolicy.k8s.elastic.co

@@ -8,11 +8,11 @@ region=us-central1
 # zone=us-central1-a
 project_id=`gcloud config get-value project`
 default_pool=default-pool
-nodes_per_zone=5 # per zone
-machine_type=e2-standard-2
+nodes_per_zone=3 # per zone
+machine_type=e2-standard-4
 release_channel=None # None -> static, e.g. rapid, regular, stable
-gke_version=1.34.3-gke.1051003
-eck_version=3.3.0
+gke_version=1.35.5-gke.1057002
+eck_version=3.4.1
 es_cluster_name=dingo-demo
 
 __create_gke() {
