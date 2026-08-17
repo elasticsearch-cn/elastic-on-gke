@@ -11,7 +11,7 @@ default_pool=default-pool
 nodes_per_zone=6 # per zone
 machine_type=n2-standard-8
 release_channel=None # None -> static, e.g. rapid, regular, stable
-gke_version=1.35.5-gke.1057002
+gke_version=1.35.6-gke.1641000
 eck_version=3.4.1
 
 __usage() {
